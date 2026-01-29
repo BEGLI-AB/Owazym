@@ -1,0 +1,412 @@
+:root {
+  --sidebar-w: 260px;
+
+  --bg: #000;
+  --surface: #0b0b0b;
+  --surface-2: #0f0f0f;
+
+  --stroke: rgba(255, 255, 255, .08);
+  --stroke-2: rgba(255, 255, 255, .12);
+
+  --text: #fff;
+  --text-dim: rgba(255, 255, 255, .75);
+
+  --shadow-1: 0 6px 18px rgba(0, 0, 0, .35);
+  --shadow-2: 0 12px 30px rgba(0, 0, 0, .55);
+
+  --ease: cubic-bezier(.2, .8, .2, 1);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Smoothness */
+a,
+button,
+.nav-link,
+.dropdown-menu,
+.form-control,
+.offcanvas,
+.navbar {
+  transition: transform .18s var(--ease),
+    box-shadow .18s var(--ease),
+    background-color .18s var(--ease),
+    border-color .18s var(--ease),
+    color .18s var(--ease),
+    opacity .18s var(--ease);
+}
+
+.brand {
+  font-weight: 700;
+  letter-spacing: .2px;
+}
+
+.w-custom-1 {
+  height: 24px;
+}
+
+/* Topbar */
+.topbar {
+  background: #000 !important;
+  border-bottom: 1px solid var(--stroke) !important;
+  box-shadow: var(--shadow-1);
+}
+
+/* Center wish */
+.wish-pill {
+  background: var(--surface-2);
+  border: 1px solid var(--stroke);
+  box-shadow: var(--shadow-1);
+  border-radius: 999px;
+  padding: .4rem .85rem;
+  display: inline-block;
+  max-width: min(560px, 70vw);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Sidebar */
+.app-sidebar {
+  width: var(--sidebar-w);
+  background: var(--surface);
+  border-right: 1px solid var(--stroke);
+  box-shadow: 1px 0 12px rgba(0, 0, 0, .55);
+}
+
+/* Desktop fixed sidebar */
+@media (min-width: 992px) {
+  .app-sidebar {
+    position: fixed;
+    inset: 56px auto 0 0;
+    /* ниже topbar */
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+  }
+
+  .app-content {
+    margin-left: var(--sidebar-w);
+  }
+}
+
+/* Content */
+.app-content {
+  min-height: calc(100vh - 56px);
+}
+
+/* Search */
+.search-input {
+  background: var(--surface-2);
+  border: 1px solid var(--stroke);
+  color: var(--text);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05);
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, .55);
+}
+
+.search-input:focus {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06), var(--shadow-1);
+  border-color: var(--stroke-2);
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+/* Nav links */
+.nav-apple .nav-link {
+  color: var(--text-dim);
+  border-radius: 12px;
+  padding: .65rem .85rem;
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+.nav-apple .nav-link:hover {
+  background: rgba(255, 255, 255, .04);
+  border-color: rgba(255, 255, 255, .06);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-1);
+}
+
+.nav-apple .nav-link.active {
+  background: rgba(255, 255, 255, .06);
+  border-color: rgba(255, 255, 255, .10);
+  color: #fff;
+  box-shadow: var(--shadow-2);
+  position: relative;
+}
+
+/* Offcanvas */
+.offcanvas {
+  border-left: 1px solid var(--stroke);
+}
+
+/* =========================
+   THEME SWITCH (toggle)
+========================= */
+.theme-switch {
+  display: inline-block;
+  width: 64px;
+  height: 34px;
+}
+
+.theme-switch input {
+  display: none;
+}
+
+.theme-switch .slider {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: #cfd6dd;
+  /* off */
+  transition: .2s;
+}
+
+.theme-switch .slider::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #fff;
+  transition: .2s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .15);
+}
+
+.theme-switch input:checked+.slider {
+  background: #34c759;
+}
+
+.theme-switch input:checked+.slider::after {
+  transform: translateX(30px);
+}
+
+@media (max-width:576px) {
+  .theme-switch {
+    transform: scale(.92);
+    transform-origin: left center;
+  }
+}
+
+/* =========================
+   LIGHT THEME OVERRIDES
+========================= */
+body.light {
+  --bg: #f6f7fb;
+  --surface: #ffffff;
+  --surface-2: #f1f3f8;
+
+  --stroke: rgba(0, 0, 0, .08);
+  --stroke-2: rgba(0, 0, 0, .12);
+
+  --text: #111;
+  --text-dim: rgba(0, 0, 0, .6);
+
+  --shadow-1: 0 6px 18px rgba(0, 0, 0, .10);
+  --shadow-2: 0 12px 30px rgba(0, 0, 0, .12);
+}
+
+/* ===== FIX bootstrap colors in light mode ===== */
+body.light .text-white {
+  color: var(--text) !important;
+}
+
+body.light .text-white-50 {
+  color: var(--text-dim) !important;
+}
+
+/* offcanvas и блоки с text-bg-dark должны стать светлыми */
+body.light .text-bg-dark {
+  background-color: var(--surface) !important;
+  color: var(--text) !important;
+}
+
+/* dropdown-menu-dark тоже в светлый */
+body.light .dropdown-menu-dark {
+  background-color: var(--surface) !important;
+  border: 1px solid var(--stroke) !important;
+}
+
+body.light .dropdown-menu-dark .dropdown-item {
+  color: var(--text) !important;
+}
+
+body.light .dropdown-menu-dark .dropdown-item:hover {
+  background: rgba(0, 0, 0, .06) !important;
+}
+
+/* topbar в светлом режиме (сейчас у тебя прибит к #000 !important) */
+body.light .topbar {
+  background: var(--surface) !important;
+  border-bottom: 1px solid var(--stroke) !important;
+}
+
+/* nav hover/active — вместо белых rgba делаем тёмные */
+body.light .nav-apple .nav-link {
+  color: var(--text-dim);
+}
+
+body.light .nav-apple .nav-link:hover {
+  background: rgba(0, 0, 0, .04);
+  border-color: rgba(0, 0, 0, .06);
+  color: var(--text);
+}
+
+body.light .nav-apple .nav-link.active {
+  background: rgba(0, 0, 0, .06);
+  border-color: rgba(0, 0, 0, .10);
+  color: var(--text);
+}
+
+/* search input в светлом */
+body.light .search-input {
+  background: var(--surface-2);
+  border: 1px solid var(--stroke);
+  color: var(--text);
+}
+
+body.light .search-input::placeholder {
+  color: rgba(0, 0, 0, .45);
+}
+
+/* =========================
+   iOS-like THEME SWITCH
+========================= */
+.theme-switch.ios {
+  width: 58px;
+  height: 32px;
+  display: inline-block;
+}
+
+.theme-switch.ios input {
+  display: none;
+}
+
+.theme-switch.ios .slider {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+
+  /* база */
+  background: rgba(255, 255, 255, .12);
+  border: 2px solid rgba(255, 255, 255, .28);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, .20),
+    0 6px 18px rgba(0, 0, 0, .25);
+
+  transition: .18s ease;
+}
+
+.theme-switch.ios .slider::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+
+  background: #fff;
+  box-shadow:
+    0 10px 18px rgba(0, 0, 0, .25),
+    inset 0 -2px 0 rgba(0, 0, 0, .08);
+
+  transition: .18s ease;
+}
+
+/* ON */
+.theme-switch.ios input:checked+.slider {
+  background: #34c759;
+  border-color: rgba(52, 199, 89, .55);
+  box-shadow:
+    0 0 0 4px rgba(52, 199, 89, .18),
+    0 10px 26px rgba(0, 0, 0, .22);
+}
+
+.theme-switch.ios input:checked+.slider::after {
+  transform: translateX(26px);
+}
+
+/* Light mode: чуть темнее рамку, чтобы красиво смотрелось */
+body.light .theme-switch.ios .slider {
+  background: rgba(0, 0, 0, .06);
+  border-color: rgba(0, 0, 0, .18);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, .55),
+    0 8px 18px rgba(0, 0, 0, .10);
+}
+
+
+/* родитель для absolute */
+.topbar {
+  position: relative;
+}
+
+/* убираем bootstrap padding у container-fluid на телефоне */
+@media (max-width: 991.98px) {
+  .topbar .container-fluid {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}
+
+/* сама кнопка — слева по краю и по центру по высоте */
+.mobile-theme-toggle {
+  position: absolute !important;
+  left: 10px;
+  /* можно 6px или 12px */
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 9999;
+}
+/* Light mode: burger becomes dark */
+body.light .navbar-toggler-icon,
+body.light-mode .navbar-toggler-icon {
+  filter: invert(1);
+}
+
+@font-face {
+  font-family: 'Ambassador';
+  src: url('../font/ambassador.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  font-family: 'Ambassador', sans-serif;
+  font-weight: normal;
+}
+.owazym-bg-logo {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 50%);
+    z-index: 9999;
+    pointer-events: none;
+    transform: translate(-50%, 45%);
+    height: auto;
+    width: 1200px;
+    opacity: 0.3;
+    z-index: 1;
+    pointer-events: none;
+    filter: drop-shadow(0px 0px 30px rgba(230, 0, 120, 0.5));
+    transition: transform 0.3s ease;
+}
+.nav-fixed {
+  position: sticky;
+  top: 0;
+}
