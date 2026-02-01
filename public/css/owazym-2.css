@@ -373,6 +373,7 @@ body.light .theme-switch.ios .slider {
   transform: translateY(-50%);
   z-index: 9999;
 }
+
 /* Light mode: burger becomes dark */
 body.light .navbar-toggler-icon,
 body.light-mode .navbar-toggler-icon {
@@ -390,23 +391,97 @@ body {
   font-family: 'Ambassador', sans-serif;
   font-weight: normal;
 }
+
 .owazym-bg-logo {
-    position: fixed;
-    bottom: 0;
-    left: 50%;
-    transform: translate(-50%, 50%);
-    z-index: 9999;
-    pointer-events: none;
-    transform: translate(-50%, 45%);
-    height: auto;
-    width: 1200px;
-    opacity: 0.3;
-    z-index: 1;
-    pointer-events: none;
-    filter: drop-shadow(0px 0px 30px rgba(230, 0, 120, 0.5));
-    transition: transform 0.3s ease;
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 50%);
+  z-index: 9999;
+  pointer-events: none;
+  transform: translate(-50%, 45%);
+  height: auto;
+  width: 1200px;
+  opacity: 0.3;
+  z-index: 1;
+  pointer-events: none;
+  filter: drop-shadow(0px 0px 30px rgba(230, 0, 120, 0.5));
+  transition: transform 0.3s ease;
 }
+
 .nav-fixed {
   position: sticky;
   top: 0;
+}
+
+.artists-scrollable {
+  max-height: 300px;
+  /* Настройте высоту под себя */
+  overflow-y: auto;
+  /* Включает вертикальный роллер */
+  scrollbar-width: thin;
+  /* Тонкий скроллбалл для современных браузеров */
+}
+
+/* Стилизация скроллбара для Chrome/Safari (чтобы он был красивым) */
+.artists-scrollable::-webkit-scrollbar {
+  width: 6px;
+}
+
+.artists-scrollable::-webkit-scrollbar-thumb {
+  background-color: #444;
+  border-radius: 10px;
+}
+
+/* Настройка для Chrome, Safari и Edge */
+.artists-scrollable::-webkit-scrollbar {
+  width: 6px;
+  /* Ширина полосы */
+}
+
+.artists-scrollable::-webkit-scrollbar-track {
+  background: transparent;
+  /* Делаем фон дорожки прозрачным */
+}
+
+.artists-scrollable::-webkit-scrollbar-thumb {
+  background: #444;
+  /* Цвет самого ползунка */
+  border-radius: 10px;
+  /* Закругление */
+}
+
+.artists-scrollable::-webkit-scrollbar-thumb:hover {
+  background: #555;
+  /* Цвет при наведении */
+}
+
+/* Настройка для Firefox */
+.artists-scrollable {
+  scrollbar-width: thin;
+  scrollbar-color: #444 transparent;
+}
+
+.artists-scrollable {
+  color-scheme: dark;
+  /* Это заставит браузер рисовать темный скроллбар автоматически */
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* В Bootstrap 5 свечение убирается так */
+
+.nav-link-1:hover {
+  color: #ffc107 !important;
+  /* Желтый, как у кнопок, или любой другой цвет */
+  background-color: rgba(255, 255, 255, 0.1);
+  /* Легкий фон при наведении (как в Spotify) */
+  border-radius: 5px;
+  /* Скругление фона */
+}
+
+/* Если нужно убрать синий цвет навсегда */
+.nav-link-1 {
+  color: white !important;
+  /* Основной цвет текста */
 }
