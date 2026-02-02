@@ -17,9 +17,9 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'Name'=>fake()->word(),
-            'Subscribes'=>fake()->boolean(100),
-            'Password'=>fake()->password(),
+            'name'=>fake()->word(),
+            'subscribes'=>fake()->boolean(100),
+            'password'=>fake()->password(),
         ];
     }
 }

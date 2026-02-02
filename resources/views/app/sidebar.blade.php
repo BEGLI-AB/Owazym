@@ -14,7 +14,11 @@
   </nav>
   <div class="artists-scrollable" style="max-height: 400px; overflow-y: auto;">
     <nav class="nav flex-column">
-      <a class="nav-link nav-link-1"><i class="bi bi-person-circle"></i> Jeren halnazarova</a>
+       @foreach($artists as $artist)
+        <a class="nav-link text-white">
+          <i class="bi bi-person-circle"></i> {{ $artist->name }}
+        </a>
+        @endforeach
     </nav>
   </div>
   <div class="mt-auto pt-3 border-top" style="border-color: rgba(255,255,255,.10)!important;">
@@ -61,8 +65,12 @@
 
     <div class="artists-scrollable" style="max-height: 400px; overflow-y: auto;">
       <nav class="nav flex-column">
-        <a class="nav-link nav-link-1"><i class="bi bi-person-circle"></i> Jeren halnazarova</a>
-
+        <!-- vot eto dolzno prihodit s databazy imya artista -->
+        @foreach($artists as $artist)
+        <a class="nav-link text-white">
+          <i class="bi bi-person-circle"></i> {{ $artist->name }}
+        </a>
+        @endforeach
       </nav>
     </div>
   </div>

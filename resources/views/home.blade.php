@@ -18,25 +18,38 @@
 
     <!-- MAIN -->
     <main class="app-content flex-grow-1 p-3 text-white">
-      <section id="home" class="mb-4">
-        <h1 class="h4">Главная</h1>
-        <p class="text-white-50">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Iusto nemo autem fugit distinctio consequuntur beatae odit sequi maiores? Explicabo totam quam consectetur autem eum voluptate rem ducimus, rerum ut eius temporibus quod consequuntur nisi facilis asperiores? Aliquid at voluptatibus placeat reiciendis autem. Nulla harum repudiandae sapiente laudantium nam pariatur vel sequi! Praesentium dicta nulla quo suscipit similique earum, fugit rerum unde aut, mollitia aliquid explicabo molestiae totam tempora quas modi. Impedit commodi, cumque aperiam, atque nemo reprehenderit maiores enim aliquid suscipit odit nostrum hic natus. Velit et voluptatibus nihil officia ex ducimus laudantium, esse veritatis laborum odit ad minus possimus!</p>
+
+
+      <section class="spotify-section">
+        <div>
+          <h3>Популярные</h3>
+        </div>
+
+        <div class="viewport">
+          <button class="overlay-arrow right" id="nextBtn" onclick="slide(1)">></button>
+          <button class="overlay-arrow left" id="prevBtn" onclick="slide(-1)"><</button>
+          <div class="scroll-row" id="row">
+            @foreach ($musics as $music)
+              <div class="music-card">
+                <img src="{{ asset('/img/1.jpg') }}">
+                <div class="title">{{ $music->name }}</div>
+                <div class="artist">{{ $music->artist->name }}</div>
+              </div>
+            @endforeach
+          </div>
+        </div>
       </section>
 
-      <section id="actors" class="mb-4">
-        <h2 class="h5">Актёры</h2>
-        <p class="text-white-50">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Iusto nemo autem fugit distinctio consequuntur beatae odit sequi maiores? Explicabo totam quam consectetur autem eum voluptate rem ducimus, rerum ut eius temporibus quod consequuntur nisi facilis asperiores? Aliquid at voluptatibus placeat reiciendis autem. Nulla harum repudiandae sapiente laudantium nam pariatur vel sequi! Praesentium dicta nulla quo suscipit similique earum, fugit rerum unde aut, mollitia aliquid explicabo molestiae totam tempora quas modi. Impedit commodi, cumque aperiam, atque nemo reprehenderit maiores enim aliquid suscipit odit nostrum hic natus. Velit et voluptatibus nihil officia ex ducimus laudantium, esse veritatis laborum odit ad minus possimus!</p>
-      </section>
-
-      <section id="playlist" class="mb-4">
-        <h2 class="h5">Мой плейлист</h2>
-        <p class="text-white-50">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Iusto nemo autem fugit distinctio consequuntur beatae odit sequi maiores? Explicabo totam quam consectetur autem eum voluptate rem ducimus, rerum ut eius temporibus quod consequuntur nisi facilis asperiores? Aliquid at voluptatibus placeat reiciendis autem. Nulla harum repudiandae sapiente laudantium nam pariatur vel sequi! Praesentium dicta nulla quo suscipit similique earum, fugit rerum unde aut, mollitia aliquid explicabo molestiae totam tempora quas modi. Impedit commodi, cumque aperiam, atque nemo reprehenderit maiores enim aliquid suscipit odit nostrum hic natus. Velit et voluptatibus nihil officia ex ducimus laudantium, esse veritatis laborum odit ad minus possimus!</p>
-      </section>
       <img src="./img/image.png" class="owazym-bg-logo" alt="">
     </main>
 
   </div>
-
+  <script>
+    const user = {
+      firstName: "{{ $firstName }}",
+      plan: "{{ $plan }}"
+    };
+  </script>
   <script src="{{asset("/js/bootstrap.bundle.min.js")}}"></script>
   <script src="{{asset("/js/owazym.js")}}"></script>
 

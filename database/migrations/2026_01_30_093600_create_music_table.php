@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('music', function (Blueprint $table) {
             $table->id();
-            $table->string("Name");
-            $table->foreignId("Artist_id");
-            $table->foreignId("Year_id");
-            $table->foreignId("Language_id");
-            $table->foreignId("Category_id");
+            $table->string("name");
+            $table->foreignId("artist_id");
+            $table->foreignId("year_id");
+            $table->foreignId("language_id");
+            $table->foreignId("category_id");
             $table->timestamps();
         });
     }

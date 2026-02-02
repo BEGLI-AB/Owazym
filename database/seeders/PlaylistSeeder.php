@@ -14,8 +14,8 @@ class PlaylistSeeder extends Seeder
     public function run(): void
     {
         Playlist::create([
-        "User_id"=>1,
-        "Name"=>"Favorite Music",
+        "user_id"=>1,
+        "name"=>"Favorite Music",
         ]);
     }
 }

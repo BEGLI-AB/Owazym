@@ -15,13 +15,13 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
         Category::create([
-        "Name"=>"Halk_aydym",
+        "name"=>"Halk_aydym",
         ]);
         Category::create([
-        "Name"=>"POP",
+        "name"=>"POP",
         ]);
         Category::create([
-        "Name"=>"Rap",
+        "name"=>"Rap",
         ]);
     }
 }

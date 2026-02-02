@@ -14,13 +14,13 @@ class LanguageSeeder extends Seeder
     public function run(): void
     {
         Language::create([
-        "Name"=>"Rus",
+        "name"=>"Rus",
         ]);
         Language::create([
-        "Name"=>"Eng",
+        "name"=>"Eng",
         ]);
         Language::create([
-        "Name"=>"Tkm",
+        "name"=>"Tkm",
         ]);
     }
 }

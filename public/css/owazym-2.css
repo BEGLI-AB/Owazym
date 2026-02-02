@@ -485,3 +485,214 @@ body {
   color: white !important;
   /* Основной цвет текста */
 }
+.spotify-section {
+  margin: 30px 0;
+}
+
+.scroll-row {
+  display:flex;
+  gap:18px;
+  overflow:hidden;
+  scroll-behavior:smooth;
+}
+
+.music-card {
+  min-width:180px;
+  background:#181818;
+  border-radius:16px;
+  padding:12px;
+  cursor:pointer;
+  transition:.25s;
+}
+
+.music-card:hover {
+  background:#242424;
+  transform:translateY(-4px);
+}
+
+.music-card img {
+  width:100%;
+  aspect-ratio:1/1;
+  border-radius:12px;
+  object-fit:cover;
+}
+
+.music-card .title {
+  font-weight:600;
+  margin-top:10px;
+  font-size:14px;
+}
+
+.music-card .artist {
+  font-size:13px;
+  color:#b3b3b3;
+}
+
+
+
+.spotify-section {
+  position: relative;
+}
+
+/* 🔥 ОКНО как в Spotify */
+.viewport {
+  overflow: hidden;          /* ⬅️ скрывает обрезки */
+  position: relative;
+}
+
+/* ЛЕНТА */
+.scroll-row {
+  display: flex;
+  gap: 18px;
+  padding-left: 4px;         /* чтобы первая карточка была целая */
+  scroll-behavior: smooth;
+}
+
+/* КАРТОЧКА */
+.music-card {
+  flex: 0 0 180px;           /* ⬅️ фиксированная ширина */
+  background: #181818;
+  border-radius: 16px;
+  padding: 12px;
+  transition: 0.25s;
+}
+
+/* СТРЕЛКИ КАК В SPOTIFY */
+.arrows {
+  display: flex;
+  gap: 8px;
+}
+
+.arrow {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(30,30,30,0.9);
+  color: white;
+  font-size: 22px;
+  cursor: pointer;
+  opacity: 0;               /* ⬅️ скрыты */
+  transition: 0.2s;
+}
+
+/* показываем стрелки при hover */
+.spotify-section:hover .arrow {
+  opacity: 1;
+}
+
+.arrow:hover {
+  background: #2a2a2a;
+}
+.spotify-section {
+  position: relative;
+}
+
+/* ОКНО как в Spotify */
+.viewport {
+  overflow: hidden;
+  position: relative;
+}
+
+/* ЛЕНТА */
+.scroll-row {
+  display: flex;
+  gap: 18px;
+  padding-left: 0;              /* ⬅️ важно */
+  scroll-behavior: smooth;
+}
+
+/* КАРТОЧКА */
+.music-card {
+  flex: 0 0 180px;
+  background: #181818;
+  border-radius: 16px;
+  padding: 12px;
+}
+
+/* СТРЕЛКИ */
+.arrows {
+  display: flex;
+  gap: 8px;
+}
+
+.arrow {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(30,30,30,.9);
+  color: white;
+  font-size: 22px;
+  cursor: pointer;
+  opacity: 0;
+  transition: .2s;
+}
+
+/* показываем стрелки как в Spotify */
+.spotify-section:hover .arrow {
+  opacity: 1;
+}
+
+/* скрытые */
+.arrow.hidden {
+  opacity: 0 !important;
+  pointer-events: none;
+}
+.spotify-section {
+  position: relative;
+}
+
+.viewport {
+  position: relative;
+  overflow: hidden;
+}
+
+/* ЛЕНТА */
+.scroll-row {
+  display: flex;
+  gap: 18px;
+  scroll-behavior: smooth;
+}
+
+/* КНОПКИ ПОВЕРХ КОНТЕНТА */
+.overlay-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+
+  background: rgba(30,30,30,0.9);
+  color: white;
+  font-size: 26px;
+  cursor: pointer;
+
+  opacity: 0;
+  transition: .2s;
+}
+
+/* правая */
+.overlay-arrow.right {
+  right: 8px;
+}
+
+/* левая */
+.overlay-arrow.left {
+  left: 8px;
+}
+
+/* показываем при hover */
+.viewport:hover .overlay-arrow {
+  opacity: 1;
+}
+
+/* скрытые */
+.overlay-arrow.hidden {
+  opacity: 0 !important;
+  pointer-events: none;
+}

@@ -14,37 +14,37 @@ class YearSeeder extends Seeder
     public function run(): void
     {
         Year::create([
-        "Date"=>2026,
+        "date"=>2026,
         ]);
         Year::create([
-        "Date"=>2025,
+        "date"=>2025,
         ]);
         Year::create([
-        "Date"=>2024,
+        "date"=>2024,
         ]);
         Year::create([
-        "Date"=>2023,
+        "date"=>2023,
         ]);
         Year::create([
-        "Date"=>2022,
+        "date"=>2022,
         ]);
         Year::create([
-        "Date"=>2021,
+        "date"=>2021,
         ]);
         Year::create([
-        "Date"=>2020,
+        "date"=>2020,
         ]);
         Year::create([
-        "Date"=>2019,
+        "date"=>2019,
         ]);
         Year::create([
-        "Date"=>2018,
+        "date"=>2018,
         ]);
         Year::create([
-        "Date"=>2017,
+        "date"=>2017,
         ]);
         Year::create([
-        "Date"=>2016,
+        "date"=>2016,
         ]);
     }
 }

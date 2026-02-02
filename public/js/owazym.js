@@ -1,11 +1,7 @@
-// ===== DEMO auth (потом заменишь на Laravel @auth/@guest) =====
 const loggedIn = true;
-const user = { firstName: "Aman", lastName: "Gurbanov", plan: "premium" };
-
 function fullName(u) {
     const fn = (u?.firstName || "").trim();
-    const ln = (u?.lastName || "").trim();
-    return (fn + " " + ln).trim() || "Пользователь";
+    return (fn).trim() || "Пользователь";
 }
 
 // ===== Daily wish =====
@@ -88,11 +84,6 @@ function renderTopRight() {
     // ✅ Вошёл: показываем имя + toggle (только ПК) + burger (только телефон)
     el.innerHTML = `
       <span class="text-white-50 small d-none d-sm-inline me-2">${fullName(user)}</span>
-      
-      <label class="theme-switch ios d-none d-lg-inline me-2" title="Дневной режим">
-        <input id="themeToggleDesktop" type="checkbox">
-        <span class="slider"></span>
-        </label>
         
         ${burger}
         `;
@@ -100,14 +91,7 @@ function renderTopRight() {
 
 // ===== Account menu =====
 function renderAccountMenu(listEl) {
-    if (!listEl) return;
-
-    if (!loggedIn) {
-        listEl.innerHTML = `
-          <li><a class="dropdown-item" href="/login">Войти</a></li>
-          <li><a class="dropdown-item" href="/register">Регистрация</a></li>
-          `;
-    } else {
+     
         const plan = (user.plan || "free").toLowerCase();
         listEl.innerHTML = `
           <li class="px-3 py-2 small text-white-50">Профиль</li>
@@ -118,15 +102,47 @@ function renderAccountMenu(listEl) {
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
             `;
-    }
+    
 }
+const row = document.getElementById('row');
+const nextBtn = document.getElementById('nextBtn');
+const prevBtn = document.getElementById('prevBtn');
+
+function updateButtons() {
+  const maxScroll = row.scrollWidth - row.clientWidth;
+
+  // начало — скрываем левую
+  if (row.scrollLeft <= 5) {
+    prevBtn.classList.add('hidden');
+  } else {
+    prevBtn.classList.remove('hidden');
+  }
+
+  // конец — скрываем правую
+  if (row.scrollLeft >= maxScroll - 5) {
+    nextBtn.classList.add('hidden');
+  } else {
+    nextBtn.classList.remove('hidden');
+  }
+}
+
+function slide(dir) {
+  const card = row.querySelector('.music-card');
+  const step = card.offsetWidth + 18;
+
+  row.scrollBy({
+    left: dir * step * 2,
+    behavior: 'smooth'
+  });
+}
+
 
 // ===== Active menu by hash =====
 function setActiveByHash() {
     const hash = location.hash || "#home";
     document
-        .querySelectorAll("#desktopNav .nav-link, #mobileNav .nav-link")
-        .forEach(a => a.classList.toggle("active", a.getAttribute("href") === hash));
+    .querySelectorAll("#desktopNav .nav-link, #mobileNav .nav-link")
+    .forEach(a => a.classList.toggle("active", a.getAttribute("href") === hash));
 }
 
 // ===== INIT =====
@@ -137,3 +153,5 @@ renderAccountMenu(document.getElementById("accountMenuMobile"));
 setActiveByHash();
 window.addEventListener("hashchange", setActiveByHash);
 initTheme();
+row.addEventListener('scroll', updateButtons);
+window.addEventListener('load', updateButtons);

@@ -14,31 +14,31 @@ class ArtistSeeder extends Seeder
     public function run(): void
     {
         Artist::create([
-        "Name"=>"Jeren Halnazarowa",
+        "name"=>"Jeren Halnazarowa",
         ]);
         Artist::create([
-        "Name"=>"Mad Nazarow",
+        "name"=>"Mad Nazarow",
         ]);
         Artist::create([
-        "Name"=>"Musa Halbayew",
+        "name"=>"Musa Halbayew",
         ]);
         Artist::create([
-        "Name"=>"Selbi Tuwakgylyjowa",
+        "name"=>"Selbi Tuwakgylyjowa",
         ]);
         Artist::create([
-        "Name"=>"Syke Dali",
+        "name"=>"Syke Dali",
         ]);
         Artist::create([
-        "Name"=>"Dali dade",
+        "name"=>"Dali dade",
         ]);
         Artist::create([
-        "Name"=>"Gulalek Gulmyradowa",
+        "name"=>"Gulalek Gulmyradowa",
         ]);
         Artist::create([
-        "Name"=>"S-beater",
+        "name"=>"S-beater",
         ]);
         Artist::create([
-        "Name"=>"Amalia",
+        "name"=>"Amalia",
         ]);
     }
 }

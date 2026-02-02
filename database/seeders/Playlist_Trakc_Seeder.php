@@ -14,8 +14,8 @@ class Playlist_Trakc_Seeder extends Seeder
     public function run(): void
     {
         Playlist_track::create([
-        "Playlist_id"=>1,
-        "Music_id"=>1,
+        "playlist_id"=>1,
+        "music_id"=>1,
         ]);
     }
 }
