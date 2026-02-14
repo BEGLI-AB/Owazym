@@ -1,9 +1,12 @@
 <nav class="navbar nav-fixed navbar-dark sticky-top topbar">
     <div class="container-fluid d-flex align-items-center">
       <div class="me-2 d-lg-none">
-        <label class="theme-switch ios" title="Дневной режим">
-          <input id="themeToggleMobileTop" type="checkbox">
-          <span class="slider"></span>
+        <label class="theme-icon-toggle" title="{{ __('app.theme') }}">
+          <input id="themeToggleMobileTop" type="checkbox" aria-label="{{ __('app.toggle_theme') }}">
+          <span class="theme-icon">
+            <i class="bi bi-sun-fill theme-icon-sun"></i>
+            <i class="bi bi-moon-stars-fill theme-icon-moon"></i>
+          </span>
         </label>
       </div>
       <a id="NAME" class="text-light navbar-brand brand fw-light me-2 d-none d-lg-inline offcanvas-title brand  p-0"
@@ -11,7 +14,7 @@
       OWAZYM
     </a>
     <div class="mx-auto text-center">
-      <span class="wish-pill text-white-50 small" id="dailyWish">Пожелание дня…</span>
+      <span class="wish-pill text-white-50 small" id="dailyWish">{{ __('app.daily_wish') }}</span>
     </div>
     <div class="d-flex gap-2 align-items-center ms-2" id="topRightAuth">
     </div>

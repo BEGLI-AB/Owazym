@@ -40,5 +40,59 @@ class ArtistSeeder extends Seeder
         Artist::create([
         "name"=>"Amalia",
         ]);
+        Artist::create([
+        "name"=>"Jeren Halnazarowa",
+        ]);
+        Artist::create([
+        "name"=>"Mad Nazarow",
+        ]);
+        Artist::create([
+        "name"=>"Musa Halbayew",
+        ]);
+        Artist::create([
+        "name"=>"Selbi Tuwakgylyjowa",
+        ]);
+        Artist::create([
+        "name"=>"Syke Dali",
+        ]);
+        Artist::create([
+        "name"=>"Dali dade",
+        ]);
+        Artist::create([
+        "name"=>"Gulalek Gulmyradowa",
+        ]);
+        Artist::create([
+        "name"=>"S-beater",
+        ]);
+        Artist::create([
+        "name"=>"Amalia",
+        ]);
+        Artist::create([
+        "name"=>"Jeren Halnazarowa",
+        ]);
+        Artist::create([
+        "name"=>"Mad Nazarow",
+        ]);
+        Artist::create([
+        "name"=>"Musa Halbayew",
+        ]);
+        Artist::create([
+        "name"=>"Selbi Tuwakgylyjowa",
+        ]);
+        Artist::create([
+        "name"=>"Syke Dali",
+        ]);
+        Artist::create([
+        "name"=>"Dali dade",
+        ]);
+        Artist::create([
+        "name"=>"Gulalek Gulmyradowa",
+        ]);
+        Artist::create([
+        "name"=>"S-beater",
+        ]);
+        Artist::create([
+        "name"=>"Amalia",
+        ]);
     }
 }
