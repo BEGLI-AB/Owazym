@@ -16,7 +16,11 @@
     <div class="mx-auto text-center">
       <span class="wish-pill text-white-50 small" id="dailyWish">{{ __('app.daily_wish') }}</span>
     </div>
-    <div class="d-flex gap-2 align-items-center ms-2" id="topRightAuth">
+    <div
+      class="d-flex gap-2 align-items-center ms-2"
+      id="topRightAuth"
+      data-first-name="{{ auth()->user()?->name ?? 'Guest' }}"
+      data-plan="{{ (auth()->user()?->subscribes ?? false) ? 'premium' : 'free' }}">
     </div>
     
   </div>

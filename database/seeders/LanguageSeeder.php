@@ -22,5 +22,8 @@ class LanguageSeeder extends Seeder
         Language::create([
         "name"=>"Tkm",
         ]);
+        Language::create([
+        "name"=>"Arb",
+        ]);
     }
 }

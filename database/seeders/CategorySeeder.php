@@ -23,5 +23,11 @@ class CategorySeeder extends Seeder
         Category::create([
         "name"=>"Rap",
         ]);
+        Category::create([
+        "name"=>"Funck",
+        ]);
+        Category::create([
+        "name"=>"Love song",
+        ]);
     }
 }

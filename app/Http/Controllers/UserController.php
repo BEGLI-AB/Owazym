@@ -3,18 +3,28 @@
 namespace App\Http\Controllers;
 
 use App\Models\Artist;
+use App\Models\Category;
 use App\Models\Music;
 use Illuminate\Http\Request;
-use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $user = User::first();
+        $randomLimit = 15;
+        $user = Auth::user();
+        $firstName = 'Guest';
+        $plan = 'free';
+
+        if ($user) {
+            $firstName = $user->name;
+            $plan = $user->subscribes ? 'premium' : 'free';
+        }
 
         $selectedArtistId = (int) $request->query('artist_id', 0);
         $selectedMusicId = (int) $request->query('music_id', 0);
+        $selectedArtist = $selectedArtistId > 0 ? Artist::find($selectedArtistId) : null;
 
         $musicsQuery = Music::with(['artists', 'year']);
         if ($selectedArtistId > 0) {
@@ -23,7 +33,7 @@ class UserController extends Controller
             });
         }
 
-        $musics = $musicsQuery->latest()->get();
+        $musics = $musicsQuery->inRandomOrder()->take($randomLimit)->get();
         $featuredMusic = $musics->firstWhere('id', $selectedMusicId) ?? $musics->first();
 
         $albumMusics = collect();
@@ -35,22 +45,48 @@ class UserController extends Controller
                 })
                 ->values();
         }
-        $artistsQuery = Artist::whereHas('musics')->orderBy('name');
-        $artists = $artistsQuery->take(20)->get();
-        $hasMore = (clone $artistsQuery)->count() > 20;
+        $artistsQuery = Artist::whereHas('musics');
+        $artists = (clone $artistsQuery)->inRandomOrder()->take($randomLimit)->get();
+        $hasMore = (clone $artistsQuery)->count() > $randomLimit;
+
+        $popularArtists = Artist::whereHas('musics')
+            ->inRandomOrder()
+            ->take($randomLimit)
+            ->get();
+
+        $newMusics = Music::with(['artists', 'year'])
+            ->inRandomOrder()
+            ->take($randomLimit)
+            ->get();
+
+        $popularGenres = Category::withCount('musics')
+            ->whereHas('musics')
+            ->orderByDesc('musics_count')
+            ->take(3)
+            ->get();
+
+        $genreMusics = Music::with(['artists', 'year'])
+            ->whereIn('category_id', $popularGenres->pluck('id'))
+            ->latest()
+            ->get()
+            ->groupBy('category_id');
 
         return view('home', [
             'loggedIn' => true,
-            'firstName' => $user->name ?? 'Guest',
-            'plan'     => ($user && $user->subscribes) ? 'premium' : 'free',
+            'firstName' => $firstName,
+            'plan'     => $plan,
             'musics'   => $musics,
             'albumMusics' => $albumMusics,
             'featuredMusic' => $featuredMusic,
             'artists'  => $artists,
             'hasMore'  => $hasMore,
             'selectedArtistId' => $selectedArtistId,
+            'selectedArtist' => $selectedArtist,
             'selectedMusicId' => $selectedMusicId,
+            'popularArtists' => $popularArtists,
+            'newMusics' => $newMusics,
+            'popularGenres' => $popularGenres,
+            'genreMusics' => $genreMusics,
         ]);
     }
 }
-

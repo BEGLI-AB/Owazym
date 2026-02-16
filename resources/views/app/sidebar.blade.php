@@ -36,8 +36,8 @@
   </div>
   <nav class="nav flex-column nav-apple" id="desktopNav">
     <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="{{ url('/') }}"><i class="bi bi-house"></i> {{ __('app.home') }}</a>
-    <a class="nav-link {{ request()->is('musics') ? 'active' : '' }}" href="{{ route('musics.index') }}"><i class="bi bi-music-note"></i> {{ __('app.my_playlist') }}</a>
-    <a class="nav-link {{ request()->is('artists') ? 'active' : '' }}" href="{{ route('artists.index') }}"><i class="bi bi-people"></i> {{ __('app.artists') }}</a>
+    <a class="nav-link {{ request()->is('playlist') ? 'active' : '' }}" href="{{ route('playlist.index') }}"><i class="bi bi-music-note"></i> {{ __('app.my_playlist') }}</a>
+    <div><i class="bi bi-people"></i> Artist</a>
   </nav>
   <div class="artists-scrollable" style="max-height: 400px; overflow-y: auto;">
     <nav class="nav flex-column">
@@ -46,7 +46,11 @@
         data-name="{{ strtolower($artist->name) }}"
         href="{{ url('/').'?artist_id='.$artist->id.'#album' }}"
         aria-current="{{ (int) request('artist_id') === (int) $artist->id ? 'page' : 'false' }}">
-        <i class="bi bi-person-circle"></i>
+        @if (!empty($artist->photo_path))
+          <img src="{{ asset('storage/'.$artist->photo_path) }}" alt="{{ $artist->name }}" class="rounded-circle me-1" style="width:22px; height:22px; object-fit:cover;">
+        @else
+          <i class="bi bi-person-circle"></i>
+        @endif
         {{ $artist->name }}
       </a>
       @endforeach
@@ -112,7 +116,7 @@
       <form></form>
       <nav class="nav flex-column nav-apple">
         <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="{{ url('/') }}"><i class="bi bi-house"></i> {{ __('app.home') }}</a>
-        <a class="nav-link {{ request()->is('musics') ? 'active' : '' }}" href="{{ route('musics.index') }}"><i class="bi bi-music-note"></i> {{ __('app.my_playlist') }}</a>
+        <a class="nav-link {{ request()->is('playlist') ? 'active' : '' }}" href="{{ route('playlist.index') }}"><i class="bi bi-music-note"></i> {{ __('app.my_playlist') }}</a>
         <a class="nav-link {{ request()->is('artists') ? 'active' : '' }}" href="{{ route('artists.index') }}"><i class="bi bi-people"></i> {{ __('app.artists') }}</a>
       </nav>
     </div>
@@ -125,7 +129,11 @@
           data-name="{{ strtolower($artist->name) }}"
           href="{{ url('/').'?artist_id='.$artist->id.'#album' }}"
           aria-current="{{ (int) request('artist_id') === (int) $artist->id ? 'page' : 'false' }}">
-          <i class="bi bi-person-circle"></i>
+          @if (!empty($artist->photo_path))
+            <img src="{{ asset('storage/'.$artist->photo_path) }}" alt="{{ $artist->name }}" class="rounded-circle me-1" style="width:22px; height:22px; object-fit:cover;">
+          @else
+            <i class="bi bi-person-circle"></i>
+          @endif
           {{ $artist->name }}
         </a>
         @endforeach

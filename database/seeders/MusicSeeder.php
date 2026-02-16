@@ -13,61 +13,6 @@ class MusicSeeder extends Seeder
      */
     public function run(): void
     {
-        Music::create([
-        "name"=>"Seni bilmedim",
-        "artist_id"=>1,
-        "category_id"=>2,
-        "year_id"=>2,
-        "language_id"=>3,
-        ]);
-        Music::create([
-        "name"=>"Seni bilmedim",
-        "artist_id"=>1,
-        "category_id"=>2,
-        "year_id"=>2,
-        "language_id"=>3,
-        ]);
-        Music::create([
-        "name"=>"Seni bilmedim",
-        "artist_id"=>1,
-        "category_id"=>2,
-        "year_id"=>2,
-        "language_id"=>3,
-        ]);
-        Music::create([
-        "name"=>"Seni bilmedim",
-        "artist_id"=>1,
-        "category_id"=>2,
-        "year_id"=>2,
-        "language_id"=>3,
-        ]);
-        Music::create([
-        "name"=>"Seni bilmedim",
-        "artist_id"=>1,
-        "category_id"=>2,
-        "year_id"=>2,
-        "language_id"=>3,
-        ]);
-        Music::create([
-        "name"=>"Seni bilmedim",
-        "artist_id"=>1,
-        "category_id"=>2,
-        "year_id"=>2,
-        "language_id"=>3,
-        ]);
-        Music::create([
-        "name"=>"Seni bilmedim",
-        "artist_id"=>1,
-        "category_id"=>2,
-        "year_id"=>2,
-        "language_id"=>3,
-        ]);
-        Music::create([
-        "name"=>"Seni bilmedim",
-        "artist_id"=>1,
-        "category_id"=>2,
-        "year_id"=>2,
-        "language_id"=>3,
-        ]);
+        
     }
 }

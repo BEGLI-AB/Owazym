@@ -1,10 +1,10 @@
-<!doctype html>
-<html lang="ru">
+﻿<!doctype html>
+<html lang="{{ app()->getLocale() }}">
 
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>OWAZYM — Create</title>
+  <title>OWAZYM - {{ __('app.create') }}</title>
 
   <link rel="stylesheet" href="{{ asset('/css/bootstrap.css') }}" />
   <link rel="stylesheet" href="{{ asset('/css/bootstrap-icons.min.css') }}" />
@@ -19,7 +19,7 @@
 
     <main class="app-content flex-grow-1 p-3 text-white">
       <div class="container" style="max-width: 840px;">
-        <h2 class="mb-3">Create</h2>
+        <h2 class="mb-3">{{ __('app.create') }}</h2>
 
         @if (session('status'))
           <div class="alert alert-success">{{ session('status') }}</div>
@@ -37,82 +37,87 @@
 
         <div class="card bg-dark text-white mb-4">
           <div class="card-body">
-            <h5 class="card-title">Add Artist</h5>
-            <form method="POST" action="{{ route('artists.store') }}">
+            <h5 class="card-title">{{ __('app.add_artist') }}</h5>
+            <form method="POST" action="{{ route('artists.store') }}" enctype="multipart/form-data">
               @csrf
               <div class="mb-3">
-                <label class="form-label">Artist Name</label>
+                <label class="form-label">{{ __('app.artist_name') }}</label>
                 <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
               </div>
-              <button type="submit" class="btn btn-light">Create Artist</button>
+              <div class="mb-3">
+                <label class="form-label">{{ __('app.artist_photo') }}</label>
+                <input type="file" name="photo" class="form-control" accept=".jpg,.jpeg,.png,.webp" id="artistPhotoInput" required>
+                <img id="artistPhotoPreview" src="" alt="{{ __('app.artist_photo') }}" class="rounded mt-2 d-none" style="width:120px; height:120px; object-fit:cover;">
+              </div>
+              <button type="submit" class="btn btn-light">{{ __('app.create_artist') }}</button>
             </form>
           </div>
         </div>
 
         <div class="card bg-dark text-white">
           <div class="card-body">
-            <h5 class="card-title">Add Music</h5>
+            <h5 class="card-title">{{ __('app.add_music') }}</h5>
             <form method="POST" action="{{ route('musics.store') }}" enctype="multipart/form-data">
               @csrf
               <div class="mb-3">
-                <label class="form-label">Music Name</label>
+                <label class="form-label">{{ __('app.music_name') }}</label>
                 <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
               </div>
               <div class="mb-3">
-                <label class="form-label">Artist</label>
+                <label class="form-label">{{ __('app.artist') }}</label>
                 <div id="artistFields" class="d-grid gap-2">
                   @php($oldArtistIds = collect(old('artist_ids', []))->filter())
                   @if ($oldArtistIds->isEmpty())
                     <div class="d-flex gap-2 align-items-center artist-row">
                       <select name="artist_ids[]" class="form-select" required>
-                        <option value="" disabled selected>Select artist</option>
+                        <option value="" disabled selected>{{ __('app.select_artist') }}</option>
                         @foreach ($artists as $artist)
                           <option value="{{ $artist->id }}">{{ $artist->name }}</option>
                         @endforeach
                       </select>
-                      <button type="button" class="btn btn-outline-light btn-sm remove-artist" aria-label="Remove artist" disabled>Remove</button>
+                      <button type="button" class="btn btn-outline-light btn-sm remove-artist" aria-label="{{ __('app.remove') }}" disabled>{{ __('app.remove') }}</button>
                     </div>
                   @else
                     @foreach ($oldArtistIds as $aid)
                       <div class="d-flex gap-2 align-items-center artist-row">
                         <select name="artist_ids[]" class="form-select" required>
-                          <option value="" disabled>Select artist</option>
+                          <option value="" disabled>{{ __('app.select_artist') }}</option>
                           @foreach ($artists as $artist)
                             <option value="{{ $artist->id }}" @selected((int)$aid === $artist->id)>{{ $artist->name }}</option>
                           @endforeach
                         </select>
-                        <button type="button" class="btn btn-outline-light btn-sm remove-artist" aria-label="Remove artist" {{ $loop->first ? 'disabled' : '' }}>Remove</button>
+                        <button type="button" class="btn btn-outline-light btn-sm remove-artist" aria-label="{{ __('app.remove') }}" {{ $loop->first ? 'disabled' : '' }}>{{ __('app.remove') }}</button>
                       </div>
                     @endforeach
                   @endif
                 </div>
                 <button type="button" class="btn btn-outline-light btn-sm mt-2" id="addArtistBtn">
-                  + Add artist
+                  + {{ __('app.add_artist_button') }}
                 </button>
               </div>
               <div class="row g-3">
                 <div class="col-md-4">
-                  <label class="form-label">Year</label>
+                  <label class="form-label">{{ __('app.year') }}</label>
                   <select name="year_id" class="form-select" required>
-                    <option value="" disabled selected>Select year</option>
+                    <option value="" disabled selected>{{ __('app.select_year') }}</option>
                     @foreach ($years as $year)
                       <option value="{{ $year->id }}" @selected(old('year_id') == $year->id)>{{ $year->date }}</option>
                     @endforeach
                   </select>
                 </div>
                 <div class="col-md-4">
-                  <label class="form-label">Language</label>
+                  <label class="form-label">{{ __('app.language') }}</label>
                   <select name="language_id" class="form-select" required>
-                    <option value="" disabled selected>Select language</option>
+                    <option value="" disabled selected>{{ __('app.select_language') }}</option>
                     @foreach ($languages as $language)
                       <option value="{{ $language->id }}" @selected(old('language_id') == $language->id)>{{ $language->name }}</option>
                     @endforeach
                   </select>
                 </div>
                 <div class="col-md-4">
-                  <label class="form-label">Category</label>
+                  <label class="form-label">{{ __('app.category') }}</label>
                   <select name="category_id" class="form-select" required>
-                    <option value="" disabled selected>Select category</option>
+                    <option value="" disabled selected>{{ __('app.select_category') }}</option>
                     @foreach ($categories as $category)
                       <option value="{{ $category->id }}" @selected(old('category_id') == $category->id)>{{ $category->name }}</option>
                     @endforeach
@@ -121,15 +126,15 @@
               </div>
               <div class="row g-3 mt-1">
                 <div class="col-md-6">
-                  <label class="form-label">Audio File</label>
+                  <label class="form-label">{{ __('app.audio_file') }}</label>
                   <input type="file" name="audio" class="form-control" accept=".mp3,.wav,.ogg,.flac,.m4a" required>
                 </div>
                 <div class="col-md-6">
-                  <label class="form-label">Cover Image</label>
+                  <label class="form-label">{{ __('app.cover_image') }}</label>
                   <input type="file" name="cover" class="form-control" accept=".jpg,.jpeg,.png,.webp" required>
                 </div>
               </div>
-              <button type="submit" class="btn btn-light mt-3">Create Music</button>
+              <button type="submit" class="btn btn-light mt-3">{{ __('app.create_music') }}</button>
             </form>
           </div>
         </div>
@@ -140,13 +145,22 @@
   <script id="wishesData" type="application/json">@json(trans('app.wishes'))</script>
   <script id="i18nData" type="application/json">@json(trans('app.js'))</script>
   <script>
-    window.user = {
-      firstName: "",
-      plan: ""
-    };
-  </script>
-  <script>
     (function () {
+      const photoInput = document.getElementById('artistPhotoInput');
+      const photoPreview = document.getElementById('artistPhotoPreview');
+      if (photoInput && photoPreview) {
+        photoInput.addEventListener('change', () => {
+          const file = photoInput.files && photoInput.files[0];
+          if (!file) {
+            photoPreview.src = '';
+            photoPreview.classList.add('d-none');
+            return;
+          }
+          photoPreview.src = URL.createObjectURL(file);
+          photoPreview.classList.remove('d-none');
+        });
+      }
+
       const container = document.getElementById('artistFields');
       const addBtn = document.getElementById('addArtistBtn');
       if (!container || !addBtn) return;
@@ -184,7 +198,9 @@
     })();
   </script>
   <script src="{{ asset('/js/bootstrap.bundle.min.js') }}"></script>
-  <script src="{{ asset('/js/owazym.js') }}"></script>
+  <script src="{{ asset('/js/owazym.js') }}?v={{ filemtime(public_path('js/owazym.js')) }}"></script>
 </body>
 
 </html>
+
+

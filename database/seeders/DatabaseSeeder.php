@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             Playlist_Trakc_Seeder::class,
             MusicSeeder::class,
             UserSeeder::class,
+            AdminUserSeeder::class,
             ]);
     }
 }

@@ -81,7 +81,7 @@ button,
   .app-sidebar {
     position: fixed;
     inset: 56px auto 0 0;
-    /* ниже topbar */
+    /* under topbar */
     height: calc(100vh - 56px);
     overflow-y: auto;
   }
@@ -94,6 +94,7 @@ button,
 /* Content */
 .app-content {
   min-height: calc(100vh - 56px);
+  padding-bottom: 110px;
 }
 
 /* Search */
@@ -113,6 +114,34 @@ button,
   border-color: var(--stroke-2);
   background: var(--surface-2);
   color: var(--text);
+}
+
+/* Auth fields */
+.auth-input {
+  background: #ffffff !important;
+  border: 1px solid #cfd4dc !important;
+  color: #111827 !important;
+}
+
+.auth-input::placeholder {
+  color: #6b7280 !important;
+}
+
+.auth-input:focus {
+  background: #ffffff !important;
+  border-color: #86b7fe !important;
+  color: #111827 !important;
+  box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.18) !important;
+}
+
+/* Keep readable when browser autofills */
+.auth-input:-webkit-autofill,
+.auth-input:-webkit-autofill:hover,
+.auth-input:-webkit-autofill:focus,
+.auth-input:-webkit-autofill:active {
+  -webkit-text-fill-color: #111827 !important;
+  transition: background-color 9999s ease-in-out 0s;
+  box-shadow: 0 0 0px 1000px #ffffff inset !important;
 }
 
 /* Nav links */
@@ -273,19 +302,19 @@ body.light .text-white-50 {
   color: var(--text-dim) !important;
 }
 
-/* offcanvas и блоки с text-bg-dark должны стать светлыми */
+/* make text-bg-dark blocks light in light theme */
 body.light .text-bg-dark {
   background-color: var(--surface) !important;
   color: var(--text) !important;
 }
 
-/* Bootstrap bg-dark в светлом режиме */
+/* adjust Bootstrap bg-dark in light theme */
 body.light .bg-dark {
   background-color: #e9ecf3 !important;
   color: var(--text) !important;
 }
 
-/* dropdown-menu-dark тоже в светлый */
+/* dropdown-menu-dark in light theme */
 body.light .dropdown-menu-dark {
   background-color: var(--surface) !important;
   border: 1px solid var(--stroke) !important;
@@ -299,13 +328,13 @@ body.light .dropdown-menu-dark .dropdown-item:hover {
   background: rgba(0, 0, 0, .06) !important;
 }
 
-/* topbar в светлом режиме (сейчас у тебя прибит к #000 !important) */
+/* topbar in light theme */
 body.light .topbar {
   background: var(--surface) !important;
   border-bottom: 1px solid var(--stroke) !important;
 }
 
-/* nav hover/active — вместо белых rgba делаем тёмные */
+/* nav hover/active in light theme */
 body.light .nav-apple .nav-link {
   color: var(--text-dim);
 }
@@ -322,7 +351,7 @@ body.light .nav-apple .nav-link.active {
   color: var(--text);
 }
 
-/* search input в светлом */
+/* search input in light theme */
 body.light .search-input {
   background: var(--surface-2);
   border: 1px solid var(--stroke);
@@ -371,7 +400,7 @@ body.light .lang-toggle .btn-outline-light:active {
   height: 100%;
   border-radius: 999px;
 
-  /* база */
+  /* base */
   background: rgba(255, 255, 255, .12);
   border: 2px solid rgba(255, 255, 255, .28);
   box-shadow:
@@ -411,7 +440,7 @@ body.light .lang-toggle .btn-outline-light:active {
   transform: translateX(26px);
 }
 
-/* Light mode: чуть темнее рамку, чтобы красиво смотрелось */
+/* light mode border tuning */
 body.light .theme-switch.ios .slider {
   background: rgba(0, 0, 0, .06);
   border-color: rgba(0, 0, 0, .18);
@@ -421,12 +450,12 @@ body.light .theme-switch.ios .slider {
 }
 
 
-/* родитель для absolute */
+/* parent for absolute element */
 .topbar {
   position: relative;
 }
 
-/* убираем bootstrap padding у container-fluid на телефоне */
+/* remove container padding on mobile */
 @media (max-width: 991.98px) {
   .topbar .container-fluid {
     padding-left: 0 !important;
@@ -434,11 +463,11 @@ body.light .theme-switch.ios .slider {
   }
 }
 
-/* сама кнопка — слева по краю и по центру по высоте */
+/* mobile theme button placement */
 .mobile-theme-toggle {
   position: absolute !important;
   left: 10px;
-  /* можно 6px или 12px */
+  /* tweak if needed */
   top: 50%;
   transform: translateY(-50%);
   z-index: 9999;
@@ -486,14 +515,14 @@ body {
 
 .artists-scrollable {
   max-height: 300px;
-  /* Настройте высоту под себя */
+  /* adjust height if needed */
   overflow-y: auto;
-  /* Включает вертикальный роллер */
+  /* vertical scroll */
   scrollbar-width: thin;
-  /* Тонкий скроллбалл для современных браузеров */
+  /* thin scrollbar */
 }
 
-/* Стилизация скроллбара для Chrome/Safari (чтобы он был красивым) */
+/* Chrome/Safari scrollbar */
 .artists-scrollable::-webkit-scrollbar {
   width: 6px;
 }
@@ -503,30 +532,30 @@ body {
   border-radius: 10px;
 }
 
-/* Настройка для Chrome, Safari и Edge */
+/* Chrome/Safari/Edge */
 .artists-scrollable::-webkit-scrollbar {
   width: 6px;
-  /* Ширина полосы */
+  /* scrollbar width */
 }
 
 .artists-scrollable::-webkit-scrollbar-track {
   background: transparent;
-  /* Делаем фон дорожки прозрачным */
+  /* transparent track */
 }
 
 .artists-scrollable::-webkit-scrollbar-thumb {
   background: #444;
-  /* Цвет самого ползунка */
+  /* thumb color */
   border-radius: 10px;
-  /* Закругление */
+  /* rounded */
 }
 
 .artists-scrollable::-webkit-scrollbar-thumb:hover {
   background: #555;
-  /* Цвет при наведении */
+  /* hover color */
 }
 
-/* Настройка для Firefox */
+/* Firefox */
 .artists-scrollable {
   scrollbar-width: thin;
   scrollbar-color: #444 transparent;
@@ -534,181 +563,11 @@ body {
 
 .artists-scrollable {
   color-scheme: dark;
-  /* Это заставит браузер рисовать темный скроллбар автоматически */
+  /* dark scrollbar hint */
   max-height: 400px;
   overflow-y: auto;
 }
 
-/* В Bootstrap 5 свечение убирается так */
-
-.nav-link-1:hover {
-  color: #ffc107 !important;
-  /* Желтый, как у кнопок, или любой другой цвет */
-  background-color: rgba(255, 255, 255, 0.1);
-  /* Легкий фон при наведении (как в Spotify) */
-  border-radius: 5px;
-  /* Скругление фона */
-}
-
-/* Если нужно убрать синий цвет навсегда */
-.nav-link-1 {
-  color: white !important;
-  /* Основной цвет текста */
-}
-.spotify-section {
-  margin: 30px 0;
-}
-
-.scroll-row {
-  display:flex;
-  gap:18px;
-  overflow:hidden;
-  scroll-behavior:smooth;
-}
-
-.music-card {
-  min-width:180px;
-  background:#181818;
-  border-radius:16px;
-  padding:12px;
-  cursor:pointer;
-  transition:.25s;
-}
-
-.music-card:hover {
-  background:#242424;
-  transform:translateY(-4px);
-}
-
-.music-card img {
-  width:100%;
-  aspect-ratio:1/1;
-  border-radius:12px;
-  object-fit:cover;
-}
-
-.music-card .title {
-  font-weight:600;
-  margin-top:10px;
-  font-size:14px;
-}
-
-.music-card .artist {
-  font-size:13px;
-  color:#b3b3b3;
-}
-
-
-
-.spotify-section {
-  position: relative;
-}
-
-/* 🔥 ОКНО как в Spotify */
-.viewport {
-  overflow: hidden;          /* ⬅️ скрывает обрезки */
-  position: relative;
-}
-
-/* ЛЕНТА */
-.scroll-row {
-  display: flex;
-  gap: 18px;
-  padding-left: 4px;         /* чтобы первая карточка была целая */
-  scroll-behavior: smooth;
-}
-
-/* КАРТОЧКА */
-.music-card {
-  flex: 0 0 180px;           /* ⬅️ фиксированная ширина */
-  background: #181818;
-  border-radius: 16px;
-  padding: 12px;
-  transition: 0.25s;
-}
-
-/* СТРЕЛКИ КАК В SPOTIFY */
-.arrows {
-  display: flex;
-  gap: 8px;
-}
-
-.arrow {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(30,30,30,0.9);
-  color: white;
-  font-size: 22px;
-  cursor: pointer;
-  opacity: 0;               /* ⬅️ скрыты */
-  transition: 0.2s;
-}
-
-/* показываем стрелки при hover */
-.spotify-section:hover .arrow {
-  opacity: 1;
-}
-
-.arrow:hover {
-  background: #2a2a2a;
-}
-.spotify-section {
-  position: relative;
-}
-
-/* ОКНО как в Spotify */
-.viewport {
-  overflow: hidden;
-  position: relative;
-}
-
-/* ЛЕНТА */
-.scroll-row {
-  display: flex;
-  gap: 18px;
-  padding-left: 0;              /* ⬅️ важно */
-  scroll-behavior: smooth;
-}
-
-/* КАРТОЧКА */
-.music-card {
-  flex: 0 0 180px;
-  background: #181818;
-  border-radius: 16px;
-  padding: 12px;
-}
-
-/* СТРЕЛКИ */
-.arrows {
-  display: flex;
-  gap: 8px;
-}
-
-.arrow {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(30,30,30,.9);
-  color: white;
-  font-size: 22px;
-  cursor: pointer;
-  opacity: 0;
-  transition: .2s;
-}
-
-/* показываем стрелки как в Spotify */
-.spotify-section:hover .arrow {
-  opacity: 1;
-}
-
-/* скрытые */
-.arrow.hidden {
-  opacity: 0 !important;
-  pointer-events: none;
-}
 .spotify-section {
   position: relative;
 }
@@ -718,7 +577,7 @@ body {
   overflow: hidden;
 }
 
-/* ЛЕНТА */
+/* horizontal row */
 .scroll-row {
   display: flex;
   gap: 18px;
@@ -738,7 +597,42 @@ body {
   height: 0;
 }
 
-/* КНОПКИ ПОВЕРХ КОНТЕНТА */
+/* Music cards */
+.music-card {
+  flex: 0 0 180px;
+  min-width: 180px;
+  background: #181818;
+  border-radius: 16px;
+  padding: 12px;
+  cursor: pointer;
+  transition: .25s;
+}
+
+.music-card:hover {
+  background: #242424;
+  transform: translateY(-4px);
+}
+
+.music-card img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  object-fit: cover;
+  display: block;
+}
+
+.music-card .title {
+  font-weight: 600;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.music-card .artist {
+  font-size: 13px;
+  color: #b3b3b3;
+}
+
+/* overlay arrows */
 .overlay-arrow {
   position: absolute;
   top: 50%;
@@ -768,22 +662,22 @@ body {
   color: #fff;
 }
 
-/* правая */
+/* right */
 .overlay-arrow.right {
   right: 8px;
 }
 
-/* левая */
+/* left */
 .overlay-arrow.left {
   left: 8px;
 }
 
-/* показываем при hover */
+/* show on hover */
 .viewport:hover .overlay-arrow {
   opacity: 1;
 }
 
-/* скрытые */
+/* hidden */
 .overlay-arrow.hidden {
   opacity: 0 !important;
   pointer-events: none;
@@ -798,13 +692,6 @@ body {
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
-.topbar-spotify.player-ui {
-  transform: translateY(-8px);
-}
-
-.sidebar-spotify.player-ui {
-  transform: translateX(-8px);
-}
 
 .player-bar.player-ui {
   transform: translateY(8px);
@@ -821,7 +708,7 @@ body.show-player-ui .player-ui {
   position: relative;
   margin-top: 12px;
   padding: 12px 8px 24px;
-  background: linear-gradient(180deg, rgba(52, 12, 76, 0.796), rgba(214, 0, 153, 0.95) 50%);
+  background: linear-gradient(180deg, rgba(65, 15, 93, 0.796), rgba(137, 0, 98, 0.95) 50%);
   border-radius: 16px;
 }
 
@@ -947,6 +834,7 @@ body.show-album .main-page {
 
 .album-tracklist {
   padding: 12px;
+  padding-bottom: 120px;
 }
 
 .album-tracklist .tracklist-head,
@@ -990,164 +878,6 @@ body.show-album .main-page {
   font-size: 0.9rem;
 }
 
-.topbar-spotify {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  padding: 0 24px;
-  background: rgba(9, 10, 16, 0.88);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  z-index: 2000;
-}
-
-.topbar-left,
-.topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.logo-pill {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: linear-gradient(145deg, #1c1d2b, #0e0f19);
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-}
-
-.logo-pill img {
-  width: 70%;
-  height: 70%;
-  object-fit: contain;
-}
-
-.icon-pill {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  border: none;
-  background: #181a26;
-  color: #fff;
-  display: grid;
-  place-items: center;
-}
-
-.search-pill {
-  min-width: 320px;
-  max-width: 520px;
-  height: 42px;
-  padding: 0 12px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  border-radius: 14px;
-  background: #141622;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.search-pill input {
-  background: transparent;
-  border: none;
-  color: #fff;
-  outline: none;
-  width: 100%;
-  font-size: 0.95rem;
-}
-
-.search-pill .divider {
-  width: 1px;
-  height: 60%;
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.icon-ghost {
-  border: none;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.7);
-  display: grid;
-  place-items: center;
-}
-
-.ghost-link {
-  color: rgba(255, 255, 255, 0.7);
-  text-decoration: none;
-  font-size: 0.95rem;
-}
-
-.ghost-btn {
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: transparent;
-  color: #fff;
-  border-radius: 999px;
-  padding: 6px 12px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.login-btn {
-  border: none;
-  background: linear-gradient(135deg, #9b5cff, #4bd2ff);
-  color: #0b0b0f;
-  border-radius: 999px;
-  padding: 8px 18px;
-  font-weight: 600;
-}
-
-.dot {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.6);
-}
-
-.sidebar-spotify {
-  width: 280px;
-  background: #0f111b;
-  padding: 20px;
-  border-right: 1px solid rgba(255, 255, 255, 0.06);
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  position: fixed;
-  top: 64px;
-  bottom: 90px;
-  left: 0;
-  overflow: auto;
-  z-index: 1500;
-}
-
-.side-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.side-card {
-  background: linear-gradient(160deg, rgba(37, 40, 60, 0.9), rgba(22, 24, 38, 0.9));
-  border-radius: 18px;
-  padding: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.side-card h4 {
-  font-size: 1rem;
-  margin: 0 0 8px;
-}
-
-.side-card p {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.7);
-  margin-bottom: 12px;
-}
 
 .pill-btn {
   border: none;
@@ -1241,7 +971,7 @@ body.show-album .main-page {
 }
 
 .player-progress span {
-  min-width: 34px;
+  min-width: 1px;
   text-align: center;
 }
 
@@ -1286,18 +1016,19 @@ body.show-album .main-page {
 }
 
 @media (max-width: 992px) {
-  .topbar-right {
-    display: none;
-  }
-
-  .sidebar-spotify {
-    display: none;
-  }
 
   .player-bar {
     grid-template-columns: 1fr;
     height: auto;
     padding: 16px;
+  }
+
+  .app-content {
+    padding-bottom: 140px;
+  }
+
+  .album-tracklist {
+    padding-bottom: 160px;
   }
 
   .player-right {
@@ -1325,20 +1056,18 @@ body.show-album .main-page {
 }
 
 @media (max-width: 768px) {
-  .topbar-spotify {
-    height: 56px;
-    padding: 0 12px;
-  }
-
-  .search-pill {
-    min-width: 180px;
-    height: 36px;
-    border-radius: 12px;
-  }
 
   .player-bar {
     gap: 10px;
     padding: 12px 14px;
+  }
+
+  .app-content {
+    padding-bottom: 150px;
+  }
+
+  .album-tracklist {
+    padding-bottom: 170px;
   }
 
   .player-left img {
@@ -1351,3 +1080,122 @@ body.show-album .main-page {
     height: 36px;
   }
 }
+
+@media (max-width: 767.98px) {
+  .artist-row {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+
+  .artist-row .remove-artist {
+    width: 100%;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .wish-pill {
+    max-width: 56vw;
+    padding: .3rem .55rem;
+    font-size: .72rem;
+  }
+
+  #topRightAuth {
+    gap: .35rem !important;
+  }
+
+  #NAME {
+    font-size: 24px !important;
+  }
+
+  .spotify-section {
+    margin: 18px 0;
+  }
+
+  .music-card {
+    flex: 0 0 140px;
+    min-width: 140px;
+    padding: 10px;
+  }
+
+  .music-card .title {
+    font-size: 13px;
+  }
+
+  .music-card .artist {
+    font-size: 12px;
+  }
+
+  .overlay-arrow {
+    display: none !important;
+  }
+
+  .album-page {
+    padding: 10px 6px 16px;
+  }
+
+  .album-title {
+    font-size: 1.7rem;
+  }
+
+  .album-actions {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 4px 6px 10px;
+  }
+
+  .album-play {
+    width: 46px;
+    height: 46px;
+    font-size: 1.5rem;
+  }
+
+  .album-tracklist .tracklist-head,
+  .album-tracklist .track-row {
+    grid-template-columns: 28px 1fr 52px;
+    gap: 8px;
+  }
+
+  .track-title {
+    font-size: .92rem;
+  }
+
+  .track-artist,
+  .track-time {
+    font-size: .78rem;
+  }
+
+  .player-bar {
+    padding: 10px 12px 12px;
+    gap: 8px;
+  }
+
+  .player-left {
+    min-width: 0;
+  }
+
+  .player-left>div {
+    min-width: 0;
+  }
+
+  .track-now,
+  .track-now-artist {
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .player-progress span {
+    min-width: 32px;
+  }
+
+  .owazym-bg-logo {
+    width: 680px;
+    opacity: .16;
+  }
+
+  .auth-card {
+    margin: 12px;
+  }
+}
+

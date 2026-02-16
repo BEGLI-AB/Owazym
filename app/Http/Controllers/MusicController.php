@@ -8,6 +8,8 @@ use App\Models\Artist;
 use App\Models\Year;
 use App\Models\Language;
 use App\Models\Category;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class MusicController extends Controller
 {
@@ -43,7 +45,7 @@ class MusicController extends Controller
             'language_id' => ['required', 'exists:languages,id'],
             'category_id' => ['required', 'exists:categories,id'],
             'audio' => ['required', 'file', 'mimes:mp3,wav,ogg,flac,m4a'],
-            'cover' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'dimensions:width=3000,height=3000'],
+            'cover' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
         ]);
 
         $artistIds = $validated['artist_ids'];
@@ -54,12 +56,89 @@ class MusicController extends Controller
             $validated['audio_path'] = $request->file('audio')->store('audios', 'public');
         }
         if ($request->hasFile('cover')) {
-            $validated['cover_path'] = $request->file('cover')->store('covers', 'public');
+            $validated['cover_path'] = $this->resizeAndStoreCover($request->file('cover'));
         }
 
         $music = Music::create($validated);
         $music->artists()->sync($artistIds);
 
         return back()->with('status', 'Music created.');
+    }
+
+    private function resizeAndStoreCover($file): string
+    {
+        if (!function_exists('imagecreatetruecolor')) {
+            return $file->store('covers', 'public');
+        }
+        $targetSize = 3000;
+        $path = $file->getRealPath();
+        $info = @getimagesize($path);
+        if (!$info || empty($info['mime'])) {
+            return $file->store('covers', 'public');
+        }
+
+        $mime = $info['mime'];
+        switch ($mime) {
+            case 'image/png':
+                $src = imagecreatefrompng($path);
+                $ext = 'png';
+                break;
+            case 'image/webp':
+                $src = imagecreatefromwebp($path);
+                $ext = 'webp';
+                break;
+            default:
+                $src = imagecreatefromjpeg($path);
+                $ext = 'jpg';
+                break;
+        }
+
+        if (!$src) {
+            return $file->store('covers', 'public');
+        }
+
+        $srcW = imagesx($src);
+        $srcH = imagesy($src);
+        $crop = min($srcW, $srcH);
+        $srcX = (int) floor(($srcW - $crop) / 2);
+        $srcY = (int) floor(($srcH - $crop) / 2);
+
+        $dst = imagecreatetruecolor($targetSize, $targetSize);
+        if ($ext === 'png' || $ext === 'webp') {
+            imagealphablending($dst, false);
+            imagesavealpha($dst, true);
+            $transparent = imagecolorallocatealpha($dst, 0, 0, 0, 127);
+            imagefilledrectangle($dst, 0, 0, $targetSize, $targetSize, $transparent);
+        }
+
+        imagecopyresampled(
+            $dst,
+            $src,
+            0,
+            0,
+            $srcX,
+            $srcY,
+            $targetSize,
+            $targetSize,
+            $crop,
+            $crop
+        );
+
+        $filename = 'covers/' . Str::uuid()->toString() . '.' . $ext;
+        ob_start();
+        if ($ext === 'png') {
+            imagepng($dst);
+        } elseif ($ext === 'webp') {
+            imagewebp($dst, null, 90);
+        } else {
+            imagejpeg($dst, null, 90);
+        }
+        $binary = ob_get_clean();
+
+        imagedestroy($src);
+        imagedestroy($dst);
+
+        Storage::disk('public')->put($filename, $binary);
+        return $filename;
     }
 }
