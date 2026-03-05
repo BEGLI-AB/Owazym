@@ -9,11 +9,10 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\View\View;
 
 class PlaylistController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request)
     {
         $userId = Auth::id();
         $requestedPlaylistId = (int) $request->query('playlist_id', 0);
@@ -34,7 +33,7 @@ class PlaylistController extends Controller
         $sidebarArtists = Artist::query()->whereHas('musics')->orderBy('name')->take(20)->get();
         $hasMore = Artist::query()->whereHas('musics')->count() > 20;
 
-        return view('app.playlist.index', [
+        return view('app', [
             'playlist' => $playlist,
             'playlists' => $playlists,
             'tracks' => $tracks,

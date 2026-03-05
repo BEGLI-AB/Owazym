@@ -1857,6 +1857,234 @@ body.show-album .main-page {
   }
 }
 
+/* User-requested topbar mode:
+   keep navbar as primary mobile navigation,
+   disable bottom mobile footer-nav,
+   keep account behavior in topbar */
+@media (max-width: 1024px) {
+  .mobile-bottom-nav {
+    display: none !important;
+  }
+
+  .player-bar {
+    bottom: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+  .app-content {
+    padding-bottom: calc(132px + env(safe-area-inset-bottom)) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .wish-pill {
+    display: inline-block !important;
+    max-width: min(220px, 48vw);
+  }
+
+  #topRightAuth > span {
+    display: inline !important;
+    max-width: 90px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  #topRightAuth {
+    gap: .5rem !important;
+  }
+
+  #NAME {
+    display: inline-flex !important;
+    font-size: 24px !important;
+  }
+}
+
+/* Final mobile footer/player guards */
+@media (max-width: 1024px) {
+  .mobile-bottom-nav {
+    display: grid !important;
+  }
+
+  .player-bar {
+    bottom: 0 !important;
+    margin-bottom: calc(62px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .app-content {
+    padding-bottom: calc(190px + env(safe-area-inset-bottom)) !important;
+  }
+}
+
+/* =========================
+   Mobile-First Shell (2026)
+========================= */
+.app-drawer-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 1024px) {
+  .app-sidebar {
+    display: none !important;
+  }
+
+  .app-mobile-drawer {
+    display: block;
+  }
+
+  .app-content {
+    margin-left: 0 !important;
+    width: 100%;
+  }
+
+  .mobile-bottom-nav {
+    display: none !important;
+  }
+
+  .player-bar {
+    margin-bottom: 0 !important;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  .topbar .container-fluid {
+    gap: 6px !important;
+    padding: 8px 10px !important;
+  }
+
+  #NAME {
+    display: inline-flex !important;
+    align-items: center;
+    font-size: 22px !important;
+    margin-right: 0 !important;
+  }
+
+  .wish-pill {
+    display: none !important;
+  }
+
+  #topRightAuth > span {
+    display: none !important;
+  }
+
+  .app-content {
+    padding: 10px !important;
+    padding-bottom: calc(118px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .player-bar {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    height: auto;
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+    background: rgba(7, 8, 12, 0.96);
+  }
+
+  .player-left {
+    width: 100%;
+    min-width: 0;
+    gap: 10px;
+  }
+
+  .player-left img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .player-left .icon-ghost {
+    display: none;
+  }
+
+  .track-now,
+  .track-now-artist {
+    max-width: calc(100vw - 120px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .player-center {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .player-controls {
+    justify-content: flex-start;
+    width: auto;
+    gap: 8px;
+  }
+
+  .player-controls .icon-ghost,
+  .play-btn {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    min-height: 34px;
+  }
+
+  .player-progress {
+    width: 100%;
+    gap: 6px;
+    font-size: .72rem;
+  }
+
+  .player-right {
+    display: none;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .topbar .container-fluid {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  #NAME {
+    display: inline-flex !important;
+    font-size: 26px !important;
+  }
+
+  .wish-pill {
+    max-width: min(420px, 55vw);
+  }
+
+  .app-content {
+    padding-bottom: calc(128px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .player-bar {
+    grid-template-columns: 1fr;
+    height: auto;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    gap: 10px;
+  }
+
+  .player-right .icon-ghost:not(.player-close),
+  .player-right .volume-bar {
+    display: none;
+  }
+}
+
+@media (min-width: 1025px) {
+  .app-mobile-drawer {
+    display: none !important;
+  }
+
+  .app-drawer-toggle {
+    display: none !important;
+  }
+}
+
 @media (max-width: 768px) {
   .player-bar {
     gap: 10px;
@@ -2214,5 +2442,33 @@ body.show-album .main-page {
     bottom: 0;
     background: #000;
     z-index: 2;
+  }
+}
+
+/* FINAL MOBILE OVERRIDES (requested):
+   show footer nav + daily wish, hide OWAZYM label on phone/tablet */
+@media (max-width: 1024px) {
+  .mobile-bottom-nav {
+    display: grid !important;
+  }
+
+  .player-bar {
+    bottom: 0 !important;
+    margin-bottom: calc(62px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .app-content {
+    padding-bottom: calc(190px + env(safe-area-inset-bottom)) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .wish-pill {
+    display: inline-block !important;
+    max-width: min(230px, 56vw);
+  }
+
+  #NAME {
+    display: none !important;
   }
 }

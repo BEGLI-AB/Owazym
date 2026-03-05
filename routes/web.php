@@ -19,6 +19,8 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/', [UserController::class, 'index'])->name('home');
+    Route::get('/album', [UserController::class, 'index'])->name('album');
+    Route::get('/album-data', [UserController::class, 'albumData'])->name('album.data');
     Route::get('/search', [UserController::class, 'search'])->name('search');
 
     Route::get('/locale/{locale}', [HomeController::class, 'locale'])

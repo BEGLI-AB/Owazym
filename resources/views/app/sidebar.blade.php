@@ -75,17 +75,6 @@
       @endif
     </nav>
   </div>
-  <div class="mt-auto pt-3 border-top" style="border-color: rgba(255,255,255,.10)!important;">
-    <div class="dropdown">
-      <a class="nav-link nav-apple d-flex align-items-center justify-content-between px-2 py-2" href="#"
-        role="button" data-bs-toggle="dropdown" aria-expanded="false"
-        style="text-decoration:none; border-radius:12px;">
-        <span><i class="bi bi-person-circle me-2"></i> {{ __('app.my_account') }}</span>
-        <span class="text-white-50"><i class="bi bi-chevron-down"></i></span>
-      </a>
-      <ul class="dropdown-menu dropdown-menu-dark w-100" id="accountMenuDesktop"></ul>
-    </div>
-  </div>
 </aside>
 
 
@@ -93,8 +82,8 @@
 
 
 
-<div class="offcanvas offcanvas-end text-bg-dark d-lg-none" tabindex="-1" id="mobileSidebar"
-  aria-labelledby="mobileSidebarLabel" style="width: 260px;">
+<div class="offcanvas offcanvas-end text-bg-dark app-mobile-drawer" tabindex="-1" id="mobileSidebar"
+  aria-labelledby="mobileSidebarLabel" aria-modal="true" style="width: 260px;">
   <div class="offcanvas-header border-bottom" style="border-color: rgba(255,255,255,.08)!important;">
     <h5 class="offcanvas-title brand fw-light" id="mobileSidebarLabel"
       style="font-size: 34px; font-weight: lighter;">
@@ -166,22 +155,9 @@
       </nav>
     </div>
   </div>
-
-  <div class="mt-auto pt-3 border-top" style="border-color: rgba(255,255,255,.10)!important;">
-    <div class="dropdown">
-      <a class="nav-link nav-apple d-flex align-items-center justify-content-between px-2 py-2" href="#"
-        role="button" data-bs-toggle="dropdown" aria-expanded="false"
-        style="text-decoration:none; border-radius:12px;">
-        <span><i class="bi bi-person-circle me-2"></i> {{ __('app.my_account') }}</span>
-        <span class="text-white-50"><i class="bi bi-chevron-down"></i></span>
-      </a>
-      <ul class="dropdown-menu dropdown-menu-dark w-100" id="accountMenuMobile"></ul>
-    </div>
-  </div>
-
 </div>
 
-<nav class="mobile-bottom-nav d-lg-none {{ $isAdminNav ? 'mobile-bottom-nav-admin' : 'mobile-bottom-nav-user' }}" aria-label="Mobile bottom navigation">
+<nav class="mobile-bottom-nav {{ $isAdminNav ? 'mobile-bottom-nav-admin' : 'mobile-bottom-nav-user' }}" aria-label="Mobile bottom navigation">
   <a class="mobile-bottom-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}" data-nav="home">
     <i class="bi bi-house"></i>
     <span>{{ __('app.home') }}</span>

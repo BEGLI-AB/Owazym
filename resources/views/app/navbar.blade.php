@@ -9,8 +9,8 @@
           </span>
         </label>
       </div>
-      <a id="NAME" class="text-light navbar-brand brand fw-light me-2 d-none d-lg-inline offcanvas-title brand  p-0"
-      href="#home" style="font-size: 34px;">
+      <a id="NAME" class="text-light navbar-brand brand fw-light me-2 offcanvas-title brand p-0"
+      href="{{ url('/') }}#home" style="font-size: 34px;">
       OWAZYM
     </a>
     <div class="mx-auto text-center">

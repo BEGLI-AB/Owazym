@@ -137,16 +137,59 @@ function renderTopRight() {
 
     const currentUser = getCurrentUserFromDom();
     const burger = `
-      <button class="navbar-toggler d-lg-none" type="button"
-      data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-controls="mobileSidebar" aria-label="${i18n.menu}">
+      <button id="mobileDrawerToggle" class="navbar-toggler app-drawer-toggle" type="button"
+      data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-controls="mobileSidebar" aria-expanded="false" aria-label="${i18n.menu}">
       <span class="text-danger navbar-toggler-icon"></span>
       </button>
-      `;
+    `;
+    const topAccount = `
+      <div class="dropdown">
+        <button type="button" class="btn btn-sm btn-outline-light rounded-pill px-2 py-1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="${i18n.profile}">
+          <i class="bi bi-person-circle"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" id="accountMenuTop"></ul>
+      </div>
+    `;
 
     el.innerHTML = `
-      <span class="text-white-50 small d-none d-sm-inline me-2">${fullName(currentUser)}</span>
+      <span class="text-white-50 small me-2">${fullName(currentUser)}</span>
+      ${topAccount}
       ${burger}
     `;
+}
+
+function initMobileDrawerA11y() {
+    const drawer = document.getElementById('mobileSidebar');
+    const toggle = document.getElementById('mobileDrawerToggle');
+    if (!drawer || !toggle || drawer.dataset.drawerA11yBound === '1') return;
+
+    drawer.dataset.drawerA11yBound = '1';
+    const setExpanded = (expanded) => {
+        toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    };
+
+    if (window.bootstrap?.Offcanvas) {
+        const instance = window.bootstrap.Offcanvas.getOrCreateInstance(drawer);
+        drawer.addEventListener('show.bs.offcanvas', () => setExpanded(true));
+        drawer.addEventListener('hide.bs.offcanvas', () => setExpanded(false));
+
+        drawer.addEventListener('click', (e) => {
+            const target = e.target;
+            if (!(target instanceof Element)) return;
+            const link = target.closest('a[href]');
+            if (!link) return;
+            instance.hide();
+        });
+
+        window.addEventListener('owazym:route-changed', () => {
+            instance.hide();
+        });
+    } else {
+        window.addEventListener('keydown', (e) => {
+            if (e.key !== 'Escape') return;
+            setExpanded(false);
+        });
+    }
 }
 
 function renderAccountMenu(listEl) {
@@ -174,6 +217,7 @@ function renderAccountMenu(listEl) {
 function renderAccountMenus() {
     renderAccountMenu(document.getElementById('accountMenuDesktop'));
     renderAccountMenu(document.getElementById('accountMenuMobile'));
+    renderAccountMenu(document.getElementById('accountMenuTop'));
 }
 
 function refreshCarouselRefs() {
@@ -433,6 +477,7 @@ function initSharedUI() {
     initSearchToggles();
     initSearchForms();
     initSidebarCollapse();
+    initMobileDrawerA11y();
 
     if (!hashListenerBound) {
         hashListenerBound = true;

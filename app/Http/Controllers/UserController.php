@@ -13,6 +13,64 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
+    public function albumData(Request $request)
+    {
+        $selectedArtistId = (int) $request->query('artist_id', 0);
+        $selectedMusicId = (int) $request->query('music_id', 0);
+        $selectedMusic = null;
+        if ($selectedMusicId > 0) {
+            $selectedMusic = Music::with(['artists', 'year'])->find($selectedMusicId);
+        }
+        if ($selectedArtistId <= 0 && $selectedMusic) {
+            $selectedArtistId = (int) ($selectedMusic->artists->first()?->id ?? 0);
+        }
+        $selectedArtist = $selectedArtistId > 0 ? Artist::find($selectedArtistId) : null;
+
+        if ($selectedArtistId > 0) {
+            $albumMusics = Music::with(['artists', 'year'])
+                ->whereHas('artists', function ($q) use ($selectedArtistId) {
+                    $q->where('artists.id', $selectedArtistId);
+                })
+                ->latest('id')
+                ->take(12)
+                ->get();
+        } else {
+            $albumMusics = Music::with(['artists', 'year'])
+                ->inRandomOrder()
+                ->take(12)
+                ->get();
+        }
+
+        $featuredMusic = $albumMusics->firstWhere('id', $selectedMusicId) ?? $selectedMusic ?? $albumMusics->first();
+
+        $artistCover = $selectedArtist?->photo_path ? asset('storage/'.$selectedArtist->photo_path) : null;
+        $featuredCover = $artistCover ?? $featuredMusic?->cover_url ?? asset('/img/1.jpg');
+
+        return response()->json([
+            'featured' => $featuredMusic ? [
+                'id' => $featuredMusic->id,
+                'title' => $featuredMusic->name,
+                'artist' => $featuredMusic->artists->pluck('name')->join(', '),
+                'audio_url' => $featuredMusic->audio_path ? asset('storage/'.$featuredMusic->audio_path) : '',
+                'cover_url' => $featuredMusic->cover_url,
+                'hero_cover_url' => $featuredCover,
+                'year' => $featuredMusic->year?->date,
+            ] : null,
+            'tracks' => $albumMusics->map(function (Music $music) {
+                return [
+                    'id' => $music->id,
+                    'title' => $music->name,
+                    'artist' => $music->artists->pluck('name')->join(', '),
+                    'audio_url' => $music->audio_path ? asset('storage/'.$music->audio_path) : '',
+                    'cover_url' => $music->cover_url,
+                ];
+            })->values(),
+            'lock_album_cover' => $selectedArtistId > 0,
+            'artist_id' => $selectedArtistId,
+            'music_id' => $selectedMusicId,
+        ]);
+    }
+
     public function index(Request $request)
     {
         $randomLimit = 15;
@@ -27,6 +85,13 @@ class UserController extends Controller
 
         $selectedArtistId = (int) $request->query('artist_id', 0);
         $selectedMusicId = (int) $request->query('music_id', 0);
+        $selectedMusic = null;
+        if ($selectedMusicId > 0) {
+            $selectedMusic = Music::with(['artists', 'year'])->find($selectedMusicId);
+        }
+        if ($selectedArtistId <= 0 && $selectedMusic) {
+            $selectedArtistId = (int) ($selectedMusic->artists->first()?->id ?? 0);
+        }
         $selectedArtist = $selectedArtistId > 0 ? Artist::find($selectedArtistId) : null;
 
         $musicsQuery = Music::with(['artists', 'year']);
@@ -37,10 +102,18 @@ class UserController extends Controller
         }
 
         $musics = $musicsQuery->inRandomOrder()->take($randomLimit)->get();
-        $featuredMusic = $musics->firstWhere('id', $selectedMusicId) ?? $musics->first();
+        $featuredMusic = $musics->firstWhere('id', $selectedMusicId) ?? $selectedMusic ?? $musics->first();
 
         $albumMusics = collect();
-        if ($featuredMusic) {
+        if ($selectedArtistId > 0) {
+            $albumMusics = Music::with(['artists', 'year'])
+                ->whereHas('artists', function ($q) use ($selectedArtistId) {
+                    $q->where('artists.id', $selectedArtistId);
+                })
+                ->latest('id')
+                ->take(12)
+                ->get();
+        } elseif ($featuredMusic) {
             $featuredArtistIds = $featuredMusic->artists->pluck('id');
             $albumMusics = $musics
                 ->filter(function ($music) use ($featuredArtistIds) {
@@ -78,8 +151,18 @@ class UserController extends Controller
             ->where('user_id', Auth::id())
             ->orderBy('created_at')
             ->get(['id', 'name']);
+        $playlist = Playlist::query()
+            ->where('user_id', Auth::id())
+            ->orderBy('created_at')
+            ->first();
+        $tracks = collect();
+        if ($playlist) {
+            $playlist->load(['music.artists', 'music.year', 'music.category']);
+            $playlist->setRelation('music', $playlist->music->unique('id')->values());
+            $tracks = $playlist->music;
+        }
 
-        return view('home', [
+        return view('app', [
             'loggedIn' => true,
             'firstName' => $firstName,
             'plan'     => $plan,
@@ -96,6 +179,8 @@ class UserController extends Controller
             'popularGenres' => $popularGenres,
             'genreMusics' => $genreMusics,
             'playlists' => $playlists,
+            'playlist' => $playlist,
+            'tracks' => $tracks,
         ]);
     }
 
@@ -144,14 +229,26 @@ class UserController extends Controller
             ->where('user_id', Auth::id())
             ->orderBy('created_at')
             ->get(['id', 'name']);
+        $playlist = Playlist::query()
+            ->where('user_id', Auth::id())
+            ->orderBy('created_at')
+            ->first();
+        $tracks = collect();
+        if ($playlist) {
+            $playlist->load(['music.artists', 'music.year', 'music.category']);
+            $playlist->setRelation('music', $playlist->music->unique('id')->values());
+            $tracks = $playlist->music;
+        }
 
-        return view('search', [
+        return view('app', [
             'musics' => $musics,
             'featuredCover' => $featuredCover,
             'genres' => $genres,
             'countries' => $countries,
             'years' => $years,
             'playlists' => $playlists,
+            'playlist' => $playlist,
+            'tracks' => $tracks,
         ]);
     }
 }
