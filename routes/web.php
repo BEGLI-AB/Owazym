@@ -31,6 +31,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
     Route::get('/musics', [MusicController::class, 'index'])->name('musics.index');
     Route::get('/playlist', [PlaylistController::class, 'index'])->name('playlist.index');
+    Route::post('/playlists', [PlaylistController::class, 'store'])->name('playlists.store');
+    Route::delete('/playlists/{playlist}', [PlaylistController::class, 'destroy'])->name('playlists.destroy');
     
     // ADDED: Route::group()
     Route::group(['middleware' => 'admin'], function () {
@@ -50,6 +52,7 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::post('/playlist-tracks', [PlaylistTrackController::class, 'store'])->name('playlist-tracks.store');
+    Route::delete('/playlist-tracks', [PlaylistTrackController::class, 'destroy'])->name('playlist-tracks.destroy');
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 

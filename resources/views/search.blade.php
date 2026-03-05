@@ -152,6 +152,7 @@
 
   <script id="wishesData" type="application/json">@json(trans('app.wishes'))</script>
   <script id="i18nData" type="application/json">@json(trans('app.js'))</script>
+  <script id="playlistData" type="application/json">@json(($playlists ?? collect())->map(fn ($item) => ['id' => $item->id, 'name' => $item->name])->values())</script>
   <script>
     (function () {
       const applySearchTheme = () => {

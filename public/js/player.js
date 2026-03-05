@@ -23,6 +23,17 @@ let activeTrackRow = null;
 const AUDIO_STATE_KEY = 'owazym_audio_state_v1';
 const VOLUME_KEY = 'owazym_player_volume_v1';
 const AUDIO_STATE_THROTTLE_MS = 1200;
+const DEFAULT_JS_I18N = {
+    playlist_name_prompt: 'Playlist name:',
+    playlist_name_default: 'My Playlist',
+    choose_playlist_prompt: 'Choose playlist number:',
+    or_type_new_playlist_name: 'Or type a new playlist name',
+    track_not_selected: 'Track not selected.',
+    track_already_in_playlist: 'This track is already in this playlist.',
+    failed_add_track_playlist: 'Failed to add track to playlist.',
+    failed_create_playlist: 'Failed to create playlist.',
+};
+let jsI18n = { ...DEFAULT_JS_I18N };
 
 let appBound = false;
 let audioEventsBound = false;
@@ -44,6 +55,21 @@ let isVolumeSeeking = false;
 let pendingSeekRatio = null;
 let isPendingSeek = false;
 let lastAudioStateWriteAt = 0;
+
+function loadJsI18n() {
+    const i18nDataEl = document.getElementById('i18nData');
+    if (!i18nDataEl) return;
+    try {
+        const parsed = JSON.parse(i18nDataEl.textContent || '{}');
+        if (parsed && typeof parsed === 'object') {
+            jsI18n = { ...jsI18n, ...parsed };
+        }
+    } catch (_) {}
+}
+
+function t(key) {
+    return jsI18n[key] || DEFAULT_JS_I18N[key] || key;
+}
 
 function refreshPlayerRefs() {
     seekBarEl = document.querySelector('.player-seekbar');
@@ -326,7 +352,103 @@ function setAlbumAddButtonState(button, mode) {
     icon.className = 'bi bi-plus-lg';
 }
 
-async function addMusicToPlaylist(musicId) {
+function getPlaylistDataFromPage() {
+    const script = document.getElementById('playlistData');
+    if (!script) return [];
+    try {
+        const parsed = JSON.parse(script.textContent || '[]');
+        if (!Array.isArray(parsed)) return [];
+        return parsed
+            .map((item) => ({
+                id: Number(item?.id || 0),
+                name: String(item?.name || '').trim(),
+            }))
+            .filter((item) => item.id > 0 && item.name !== '');
+    } catch (_) {
+        return [];
+    }
+}
+
+function setPlaylistDataOnPage(playlists) {
+    const script = document.getElementById('playlistData');
+    if (!script) return;
+    script.textContent = JSON.stringify(playlists || []);
+}
+
+async function createPlaylist(name) {
+    const token = getCsrfToken();
+    const response = await fetch('/playlists', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': token,
+        },
+        body: JSON.stringify({ name }),
+    });
+
+    if (!response.ok) throw new Error(t('failed_create_playlist'));
+    return response.json();
+}
+
+function askPlaylistChoice(playlists) {
+    if (!Array.isArray(playlists) || playlists.length === 0) {
+        const firstName = window.prompt(t('playlist_name_prompt'), t('playlist_name_default'));
+        const name = (firstName || '').trim();
+        if (!name) return { action: 'cancel' };
+        return { action: 'new', name };
+    }
+
+    const lines = playlists.map((item, idx) => `${idx + 1}. ${item.name}`).join('\n');
+    const value = window.prompt(
+        `${t('choose_playlist_prompt')}\n${lines}\n\n${t('or_type_new_playlist_name')}`,
+        '1'
+    );
+    if (value == null) return { action: 'cancel' };
+
+    const trimmed = String(value).trim();
+    if (!trimmed) return { action: 'cancel' };
+
+    const index = Number(trimmed);
+    if (Number.isInteger(index) && index >= 1 && index <= playlists.length) {
+        return { action: 'existing', playlist: playlists[index - 1] };
+    }
+
+    return { action: 'new', name: trimmed };
+}
+
+async function pickPlaylistForAdd() {
+    const playlists = getPlaylistDataFromPage();
+    const choice = askPlaylistChoice(playlists);
+    if (choice.action === 'cancel') return null;
+
+    if (choice.action === 'existing') return choice.playlist;
+
+    const proposedName =
+        choice.name ||
+        window.prompt(t('playlist_name_prompt'), t('playlist_name_default'))?.trim();
+
+    if (!proposedName) return null;
+
+    const createResult = await createPlaylist(proposedName);
+    const playlist = {
+        id: Number(createResult?.playlist?.id || 0),
+        name: String(createResult?.playlist?.name || proposedName).trim(),
+    };
+
+    if (playlist.id > 0) {
+        const next = [...playlists];
+        if (!next.some((item) => Number(item.id) === playlist.id)) {
+            next.push(playlist);
+            setPlaylistDataOnPage(next);
+        }
+    }
+
+    return playlist;
+}
+
+async function addMusicToPlaylist(musicId, playlistId) {
     const token = getCsrfToken();
     const response = await fetch('/playlist-tracks', {
         method: 'POST',
@@ -336,7 +458,7 @@ async function addMusicToPlaylist(musicId) {
             'X-Requested-With': 'XMLHttpRequest',
             'X-CSRF-TOKEN': token,
         },
-        body: JSON.stringify({ music_id: musicId }),
+        body: JSON.stringify({ music_id: musicId, playlist_id: playlistId }),
     });
 
     if (!response.ok) throw new Error('Failed to add track');
@@ -355,17 +477,28 @@ function initAlbumAdd() {
             Number(document.querySelector('.album-play')?.dataset?.musicId || 0);
 
         if (!musicId) {
-            alert('Track not selected.');
+            alert(t('track_not_selected'));
             return;
         }
 
         try {
             setAlbumAddButtonState(addBtn, 'pending');
-            await addMusicToPlaylist(musicId);
+            const playlist = await pickPlaylistForAdd();
+            if (!playlist?.id) {
+                setAlbumAddButtonState(addBtn, 'idle');
+                return;
+            }
+
+            const result = await addMusicToPlaylist(musicId, playlist.id);
+            if (!result?.added) {
+                setAlbumAddButtonState(addBtn, 'idle');
+                alert(t('track_already_in_playlist'));
+                return;
+            }
             setAlbumAddButtonState(addBtn, 'done');
         } catch (_) {
             setAlbumAddButtonState(addBtn, 'idle');
-            alert('Failed to add track to playlist.');
+            alert(t('failed_add_track_playlist'));
         }
     });
 }
@@ -851,6 +984,7 @@ function initPersistentNavigation() {
 }
 
 function runPlayerSetup() {
+    loadJsI18n();
     initSharedUI();
     bindCarousel();
     refreshPlayerRefs();

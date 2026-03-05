@@ -6,6 +6,7 @@ use App\Models\Artist;
 use App\Models\Category;
 use App\Models\Language;
 use App\Models\Music;
+use App\Models\Playlist;
 use App\Models\Year;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -73,6 +74,11 @@ class UserController extends Controller
             ->get()
             ->groupBy('category_id');
 
+        $playlists = Playlist::query()
+            ->where('user_id', Auth::id())
+            ->orderBy('created_at')
+            ->get(['id', 'name']);
+
         return view('home', [
             'loggedIn' => true,
             'firstName' => $firstName,
@@ -89,6 +95,7 @@ class UserController extends Controller
             'newMusics' => $newMusics,
             'popularGenres' => $popularGenres,
             'genreMusics' => $genreMusics,
+            'playlists' => $playlists,
         ]);
     }
 
@@ -133,6 +140,10 @@ class UserController extends Controller
             ->simplePaginate($randomLimit)
             ->withQueryString();
         $featuredCover = $musics->getCollection()->first()?->cover_url ?? asset('/img/1.jpg');
+        $playlists = Playlist::query()
+            ->where('user_id', Auth::id())
+            ->orderBy('created_at')
+            ->get(['id', 'name']);
 
         return view('search', [
             'musics' => $musics,
@@ -140,6 +151,7 @@ class UserController extends Controller
             'genres' => $genres,
             'countries' => $countries,
             'years' => $years,
+            'playlists' => $playlists,
         ]);
     }
 }

@@ -51,6 +51,17 @@ return [
     'start_listening' => 'Dinlap basla',
     'playlist_empty' => 'Pleylst bos',
     'playlist_empty_hint' => 'Albom sahypasyna baryp "+" basyp aydym gosun',
+    'new_playlist_name' => 'Taze pleylst ady',
+    'no_playlist_selected' => 'Pleylist saylanmadyk',
+    'create_playlist_to_start' => 'Bashlamak ucin pleylist doredin',
+    'use_form_then_add_tracks' => 'Yokardaky formany ulanyp, sonra + bilen aydym gosun.',
+    'delete_playlist' => 'Pleylisti poz',
+    'confirm_delete_playlist' => 'Shu pleylisti pozmalymy?',
+    'playlist_created' => 'Pleylist doredildi.',
+    'playlist_exists' => 'Shu at bilen pleylist bar.',
+    'playlist_deleted' => 'Pleylist pozuldy.',
+    'track_removed_from_playlist' => 'Aydym pleylistden pozuldy.',
+    'track_not_in_playlist' => 'Bu aydym shu pleylistde yok.',
     'open' => 'Acyk',
     'next' => 'Indiki',
     'previous' => 'Yza',
@@ -77,7 +88,14 @@ return [
         'menu' => 'Menu',
         'register' => 'Hasaba alyn',
         'login' => 'Gir',
-        'user_fallback' => 'Ulanyjy',
+        'playlist_name_prompt' => 'Pleylist ady:',
+        'playlist_name_default' => 'Menin Pleylistim',
+        'choose_playlist_prompt' => 'Pleylist nomerini sayla:',
+        'or_type_new_playlist_name' => 'Yada taze pleylist adyny yaz',
+        'track_not_selected' => 'Aydym saylanmady.',
+        'track_already_in_playlist' => 'Bu aydym shu pleylistde bar.',
+        'failed_add_track_playlist' => 'Aydym pleyliste gosulmady.',
+        'failed_create_playlist' => 'Pleylist doretilmedi.',
     ],
     // uytketmeli ashakdakini
     'wishes' => [
@@ -89,6 +107,8 @@ return [
         'Heryerde bagt hemra bolsun.',
     ],
 ];
+
+
 
 
 

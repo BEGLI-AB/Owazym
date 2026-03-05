@@ -19,17 +19,62 @@
 
     <main class="app-content flex-grow-1 p-3 text-white">
       <div class="container" style="max-width: 1080px;">
+        @if (session('status'))
+          <div class="alert alert-info border-0 rounded-4">{{ session('status') }}</div>
+        @endif
+
+        <section class="rounded-4 p-4 mb-4 bg-dark border border-secondary-subtle">
+          <div class="d-flex flex-wrap align-items-end justify-content-between gap-3">
+            <div class="flex-grow-1">
+              <p class="text-uppercase mb-2 text-white-50" style="letter-spacing:.14em;">{{ __('app.my_playlist') }}</p>
+              <h5 class="mb-2">{{ __('app.create') }} {{ __('app.my_playlist') }}</h5>
+              <form method="POST" action="{{ route('playlists.store') }}" class="d-flex flex-wrap gap-2">
+                @csrf
+                <input
+                  type="text"
+                  name="name"
+                  class="form-control"
+                  style="max-width: 320px;"
+                  placeholder="{{ __('app.new_playlist_name') }}"
+                  required
+                  maxlength="120">
+                <button type="submit" class="btn btn-light rounded-pill px-3">
+                  <i class="bi bi-folder-plus me-1"></i> {{ __('app.create') }}
+                </button>
+              </form>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+              @foreach ($playlists as $item)
+                <a
+                  href="{{ route('playlist.index', ['playlist_id' => $item->id]) }}"
+                  class="btn rounded-pill px-3 {{ (int) $item->id === (int) ($playlist->id ?? 0) ? 'btn-light text-dark' : 'btn-outline-light' }}">
+                  {{ $item->name }}
+                </a>
+              @endforeach
+            </div>
+          </div>
+        </section>
+
         <section class="rounded-4 p-4 mb-4" style="background: linear-gradient(135deg, rgba(42,11,74,.95), rgba(131,20,78,.85)); border:1px solid rgba(255,255,255,.08);">
           <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
             <div>
               <p class="text-uppercase mb-2 text-white-50" style="letter-spacing:.14em;">{{ __('app.my_playlist') }}</p>
-              <h2 class="mb-2">{{ $playlist->name }}</h2>
+              <h2 class="mb-2">{{ $playlist->name ?? __('app.no_playlist_selected') }}</h2>
               <div class="text-white-50">{{ $tracks->count() }} {{ __('app.tracks_word') }}</div>
             </div>
             <div class="d-flex gap-2">
               <a href="{{ url('/') }}#album" class="btn btn-light rounded-pill px-3">
                 <i class="bi bi-play-fill me-1"></i> {{ __('app.start_listening') }}
               </a>
+              @if($playlist)
+                <form method="POST" action="{{ route('playlists.destroy', $playlist) }}" onsubmit="return confirm('{{ __('app.confirm_delete_playlist') }}');">
+                  @csrf
+                  @method('DELETE')
+                  <button type="submit" class="btn btn-outline-danger rounded-pill px-3">
+                    <i class="bi bi-trash me-1"></i> {{ __('app.delete_playlist') }}
+                  </button>
+                </form>
+              @endif
             </div>
           </div>
         </section>
@@ -38,8 +83,8 @@
           <div class="card bg-dark text-white border-0 rounded-4">
             <div class="card-body py-5 text-center">
               <i class="bi bi-music-note-beamed" style="font-size:2rem;"></i>
-              <h4 class="mt-3 mb-2">{{ __('app.playlist_empty') }}</h4>
-              <p class="text-white-50 mb-0">{{ __('app.playlist_empty_hint') }}</p>
+              <h4 class="mt-3 mb-2">{{ $playlist ? __('app.playlist_empty') : __('app.create_playlist_to_start') }}</h4>
+              <p class="text-white-50 mb-0">{{ $playlist ? __('app.playlist_empty_hint') : __('app.use_form_then_add_tracks') }}</p>
             </div>
           </div>
         @else
@@ -62,6 +107,15 @@
                       <a href="{{ url('/').'?music_id='.$track->id.'#album' }}" class="btn btn-outline-light rounded-pill px-3">
                         <i class="bi bi-play-fill me-1"></i> {{ __('app.open') }}
                       </a>
+                      <form method="POST" action="{{ route('playlist-tracks.destroy') }}">
+                        @csrf
+                        @method('DELETE')
+                        <input type="hidden" name="playlist_id" value="{{ $playlist->id }}">
+                        <input type="hidden" name="music_id" value="{{ $track->id }}">
+                        <button type="submit" class="btn btn-outline-danger rounded-pill px-3">
+                          <i class="bi bi-trash me-1"></i> Remove
+                        </button>
+                      </form>
                     </div>
                   </div>
                 </article>

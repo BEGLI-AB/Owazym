@@ -17,6 +17,7 @@
     @include('app.sidebar')
 
     <main class="app-content flex-grow-1 p-3 text-white">
+      <script id="playlistData" type="application/json">@json(($playlists ?? collect())->map(fn ($item) => ['id' => $item->id, 'name' => $item->name])->values())</script>
       <section class="spotify-section main-page">
         <div>
           <h3>{{ __('app.popular') }}</h3>
