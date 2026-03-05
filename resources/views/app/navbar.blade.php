@@ -20,8 +20,11 @@
       class="d-flex gap-2 align-items-center ms-2"
       id="topRightAuth"
       data-first-name="{{ auth()->user()?->name ?? 'Guest' }}"
-      data-plan="{{ (auth()->user()?->subscribes ?? false) ? 'premium' : 'free' }}">
+      data-plan="{{ (auth()->user()?->subscribes ?? false) ? 'premium' : 'free' }}"
+      data-csrf-token="{{ csrf_token() }}">
     </div>
     
   </div>
 </nav>
+
+

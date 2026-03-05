@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Artist;
 use App\Models\Category;
+use App\Models\Language;
 use App\Models\Music;
+use App\Models\Year;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -87,6 +89,57 @@ class UserController extends Controller
             'newMusics' => $newMusics,
             'popularGenres' => $popularGenres,
             'genreMusics' => $genreMusics,
+        ]);
+    }
+
+    public function search(Request $request)
+    {
+        // ADDED: simplePaginate()
+        $randomLimit = 60;
+        $query = trim((string) $request->query('q', ''));
+        $genreId = (int) $request->query('genre_id', 0);
+        $countryId = (int) $request->query('country_id', 0);
+        $yearId = (int) $request->query('year_id', 0);
+
+        $musicsQuery = Music::with(['artists', 'year']);
+        if ($query !== '') {
+            $musicsQuery->where(function ($q) use ($query) {
+                $q->where('name', 'like', "%{$query}%")
+                    ->orWhereHas('artists', function ($artistQuery) use ($query) {
+                        $artistQuery->where('name', 'like', "%{$query}%");
+                    });
+            });
+        }
+
+        if ($genreId > 0) {
+            $musicsQuery->where('category_id', $genreId);
+        }
+
+        if ($countryId > 0) {
+            $musicsQuery->where('language_id', $countryId);
+        }
+
+        if ($yearId > 0) {
+            $musicsQuery->where('year_id', $yearId);
+        }
+
+        $genres = Category::orderBy('name')->get(['id', 'name']);
+        $countries = Language::orderBy('name')->get(['id', 'name']);
+        // ADDED: latest()
+        $years = Year::latest('date')->get(['id', 'date']);
+
+        $musics = $musicsQuery
+            ->inRandomOrder()
+            ->simplePaginate($randomLimit)
+            ->withQueryString();
+        $featuredCover = $musics->getCollection()->first()?->cover_url ?? asset('/img/1.jpg');
+
+        return view('search', [
+            'musics' => $musics,
+            'featuredCover' => $featuredCover,
+            'genres' => $genres,
+            'countries' => $countries,
+            'years' => $years,
         ]);
     }
 }

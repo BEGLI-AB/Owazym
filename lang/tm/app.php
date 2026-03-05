@@ -2,9 +2,11 @@
 
 return [
     'welcome' => 'Hos geldiniz',
-    'search' => 'Gozleg',
-    'theme' => 'Tema',
-    'toggle_theme' => 'Temany calys',
+        'search' => 'Gozleg',
+        'theme' => 'Tema',
+        'toggle_theme' => 'Toggle theme',
+        'day_mode' => 'Gundiz rejim',
+    'night_mode' => 'Gije rejim',
     'language' => 'Dil',
     'home' => 'Bas sahypa',
     'my_playlist' => 'Menin pleylsdym',
@@ -87,3 +89,8 @@ return [
         'Heryerde bagt hemra bolsun.',
     ],
 ];
+
+
+
+
+

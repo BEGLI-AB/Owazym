@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="utf-8">
@@ -16,9 +16,33 @@
             caret-color: #111827 !important;
             border: 1px solid #cfd4dc !important;
         }
+        .auth-theme-toggle {
+            position: fixed;
+            top: 14px;
+            right: 14px;
+            z-index: 30;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,.2);
+            background: rgba(0,0,0,.3);
+            color: #fff;
+            font-size: .8rem;
+        }
+        body.light .auth-theme-toggle {
+            background: rgba(255,255,255,.9);
+            color: #111827;
+            border-color: rgba(0,0,0,.15);
+        }
     </style>
 </head>
 <body class="font-Ambassador d-flex align-items-center justify-content-center min-vh-100">
+<button type="button" class="auth-theme-toggle" id="authThemeToggle" aria-label="{{ __('app.toggle_theme') }}">
+    <i class="bi bi-circle-half"></i>
+    <span id="authThemeLabel">{{ __('app.night_mode') }}</span>
+</button>
 <div class="card bg-dark text-white shadow auth-card" style="max-width:420px;width:100%;border-radius:16px;">
     <div class="card-body p-4">
         <h3 class="mb-2">{{ __('app.login') }}</h3>
@@ -54,5 +78,25 @@
         </div>
     </div>
 </div>
+<script>
+(() => {
+    const key = 'theme';
+    const btn = document.getElementById('authThemeToggle');
+    const label = document.getElementById('authThemeLabel');
+    const dayText = @json(__('app.day_mode'));
+    const nightText = @json(__('app.night_mode'));
+    const applyTheme = (theme) => {
+        document.body.classList.toggle('light', theme === 'light');
+        localStorage.setItem(key, theme);
+        if (label) label.textContent = theme === 'light' ? dayText : nightText;
+    };
+    applyTheme(localStorage.getItem(key) || 'dark');
+    btn?.addEventListener('click', () => {
+        applyTheme(document.body.classList.contains('light') ? 'dark' : 'light');
+    });
+})();
+</script>
 </body>
 </html>
+
+

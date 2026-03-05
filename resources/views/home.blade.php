@@ -1,14 +1,13 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="{{ app()->getLocale() }}">
 
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>OWAZYM</title>
-
   <link rel="stylesheet" href="{{ asset('/css/bootstrap.css') }}" />
-  <link rel="stylesheet" href="{{ asset('/css/bootstrap-icons.min.css') }}" />
   <link rel="stylesheet" href="{{ asset('/css/owazym-2.css') }}" />
+  <link rel="stylesheet" href="{{ asset('/css/bootstrap-icons.min.css') }}" />
 </head>
 
 <body class="font-Ambassador">
@@ -109,15 +108,22 @@
       </section>
 
       <section class="album-page">
-        @php($featuredCover = $featuredMusic?->cover_url ?? asset('/img/1.jpg'))
+        @php($artistCover = $selectedArtist?->photo_path ? asset('storage/'.$selectedArtist->photo_path) : null)
+        @php($featuredCover = $artistCover ?? $featuredMusic?->cover_url ?? asset('/img/1.jpg'))
+        @php($lockAlbumCover = (int) ($selectedArtistId ?? 0) > 0)
         
         <a class="icon-ghost album-close" data-hash="#home" href="{{ url('/') }}#home" aria-label="{{ __('app.close_player') }}">
         <i class="bi bi-x-lg"></i>
       </a>
 
         <div class="album-hero">
-          <div class="album-cover">
-            <img src="{{ $featuredCover }}" data-default-cover="{{ $featuredCover }}" alt="{{ __('app.cover_image') }}">
+          <div class="album-cover rounded-3 overflow-hidden">
+            <img
+              class="rounded-3"
+              src="{{ $featuredCover }}"
+              data-default-cover="{{ $featuredCover }}"
+              data-lock-cover="{{ $lockAlbumCover ? '1' : '0' }}"
+              alt="{{ __('app.cover_image') }}">
           </div>
         <div class="album-info">
           <div class="album-title">{{ $featuredMusic?->name ?? __('app.track') }}</div>
@@ -163,7 +169,7 @@
             data-title="{{ $music->name }}"
             data-artist="{{ $music->artists->pluck('name')->join(', ') }}"
             data-cover-url="{{ $music->cover_url }}">
-            <span class="track-num">{{ $index === 0 ? '▶' : $index + 1 }}</span>
+            <span class="track-num">{{ $index === 0 ? '' : $index + 1 }}</span>
             <div class="track-main">
               <div class="track-title">{{ $music->name }}</div>
               <div class="track-artist">{{ $music->artists->pluck('name')->join(', ') }}</div>
@@ -228,13 +234,10 @@
 
   <script id="wishesData" type="application/json">@json(trans('app.wishes'))</script>
   <script id="i18nData" type="application/json">@json(trans('app.js'))</script>
-  <script>
-    window.csrfToken = "{{ csrf_token() }}";
-  </script>
   <script src="{{ asset('/js/bootstrap.bundle.min.js') }}"></script>
-  <script src="{{ asset('/js/owazym.js') }}?v={{ filemtime(public_path('js/owazym.js')) }}"></script>
+  <script src="{{ asset('/js/common.js') }}"></script>
+  <script src="{{ asset('/js/player.js') }}"></script>
+  <script src="{{ asset('/js/app-init.js') }}"></script>
+  <script src="{{ asset('/js/home.js') }}"></script>
 </body>
-
 </html>
-
-

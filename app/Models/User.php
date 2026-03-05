@@ -16,6 +16,7 @@ class User extends Authenticatable
         'subscribes',
     ];
 
+    // ADDED: $hidden
     protected $hidden = [
         'password',
         'remember_token',

@@ -5,6 +5,8 @@ return [
     'search' => 'Search',
     'theme' => 'Theme',
     'toggle_theme' => 'Toggle theme',
+    'day_mode' => 'Day mode',
+    'night_mode' => 'Night mode',
     'language' => 'Language',
     'home' => 'Home',
     'my_playlist' => 'My Playlist',

@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="{{ app()->getLocale() }}">
 
 <head>
@@ -76,9 +76,16 @@
   <script id="wishesData" type="application/json">@json(trans('app.wishes'))</script>
   <script id="i18nData" type="application/json">@json(trans('app.js'))</script>
   <script src="{{ asset('/js/bootstrap.bundle.min.js') }}"></script>
-  <script src="{{ asset('/js/owazym.js') }}?v={{ filemtime(public_path('js/owazym.js')) }}"></script>
+  <script src="{{ asset('/js/common.js') }}"></script>
+  <script src="{{ asset('/js/player.js') }}"></script>
+  <script src="{{ asset('/js/app-init.js') }}"></script>
+  <script src="{{ asset('/js/app-playlist-index.js') }}"></script>
 </body>
 
 </html>
+
+
+
+
 
 

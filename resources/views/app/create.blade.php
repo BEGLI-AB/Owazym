@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="{{ app()->getLocale() }}">
 
 <head>
@@ -37,26 +37,10 @@
 
         <div class="card bg-dark text-white mb-4">
           <div class="card-body">
-            <h5 class="card-title">{{ __('app.add_artist') }}</h5>
-            <form method="POST" action="{{ route('artists.store') }}" enctype="multipart/form-data">
-              @csrf
-              <div class="mb-3">
-                <label class="form-label">{{ __('app.artist_name') }}</label>
-                <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
-              </div>
-              <div class="mb-3">
-                <label class="form-label">{{ __('app.artist_photo') }}</label>
-                <input type="file" name="photo" class="form-control" accept=".jpg,.jpeg,.png,.webp" id="artistPhotoInput" required>
-                <img id="artistPhotoPreview" src="" alt="{{ __('app.artist_photo') }}" class="rounded mt-2 d-none" style="width:120px; height:120px; object-fit:cover;">
-              </div>
-              <button type="submit" class="btn btn-light">{{ __('app.create_artist') }}</button>
-            </form>
-          </div>
-        </div>
-
-        <div class="card bg-dark text-white">
-          <div class="card-body">
-            <h5 class="card-title">{{ __('app.add_music') }}</h5>
+            <button class="btn btn-outline-light w-100 text-start mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#addMusicBlock" aria-expanded="true" aria-controls="addMusicBlock">
+              {{ __('app.add_music') }}
+            </button>
+            <div class="collapse show" id="addMusicBlock">
             <form method="POST" action="{{ route('musics.store') }}" enctype="multipart/form-data">
               @csrf
               <div class="mb-3">
@@ -136,6 +120,213 @@
               </div>
               <button type="submit" class="btn btn-light mt-3">{{ __('app.create_music') }}</button>
             </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="card bg-dark text-white">
+          <div class="card-body">
+            <button class="btn btn-outline-light w-100 text-start mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#addArtistBlock" aria-expanded="false" aria-controls="addArtistBlock">
+              {{ __('app.add_artist') }}
+            </button>
+            <div class="collapse" id="addArtistBlock">
+            <form method="POST" action="{{ route('artists.store') }}" enctype="multipart/form-data">
+              @csrf
+              <div class="mb-3">
+                <label class="form-label">{{ __('app.artist_name') }}</label>
+                <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">{{ __('app.artist_photo') }}</label>
+                <input type="file" name="photo" class="form-control" accept=".jpg,.jpeg,.png,.webp" id="artistPhotoInput" required>
+                <img id="artistPhotoPreview" src="" alt="{{ __('app.artist_photo') }}" class="rounded mt-2 d-none" style="width:120px; height:120px; object-fit:cover;">
+              </div>
+              <button type="submit" class="btn btn-light">{{ __('app.create_artist') }}</button>
+            </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="card bg-dark text-white mt-4">
+          <div class="card-body">
+            <button class="btn btn-outline-light w-100 text-start mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#addCategoryBlock" aria-expanded="false" aria-controls="addCategoryBlock">
+              {{ __('app.create') }} {{ __('app.category') }}
+            </button>
+            <div class="collapse" id="addCategoryBlock">
+              <form method="POST" action="{{ route('categories.store') }}">
+                @csrf
+                <div class="input-group">
+                  <input type="text" name="name" class="form-control" placeholder="{{ __('app.category') }}" required>
+                  <button type="submit" class="btn btn-light">{{ __('app.create') }}</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="card bg-dark text-white mt-4">
+          <div class="card-body">
+            <button class="btn btn-outline-light w-100 text-start mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#manageArtistsBlock" aria-expanded="false" aria-controls="manageArtistsBlock">
+              Manage Artists
+            </button>
+            <div class="collapse" id="manageArtistsBlock">
+            <form method="GET" action="{{ route('create') }}" class="mb-3">
+              <div class="input-group">
+                <input type="search" name="artist_q" value="{{ $artistQuery ?? '' }}" class="form-control" placeholder="{{ __('app.search') }} {{ __('app.artist') }}">
+                @if(!empty($musicQuery))
+                  <input type="hidden" name="music_q" value="{{ $musicQuery }}">
+                @endif
+                @if(!empty($categoryQuery))
+                  <input type="hidden" name="category_q" value="{{ $categoryQuery }}">
+                @endif
+                <button class="btn btn-outline-light" type="submit">{{ __('app.search') }}</button>
+                <a class="btn btn-outline-secondary" href="{{ route('create') }}">Reset</a>
+              </div>
+            </form>
+            <div class="table-responsive">
+              <table class="table table-dark table-striped align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>{{ __('app.artist') }}</th>
+                    <th class="text-end">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @forelse ($existingArtists ?? collect() as $artistItem)
+                    <tr>
+                      <td>{{ $artistItem->id }}</td>
+                      <td>{{ $artistItem->name }}</td>
+                      <td class="text-end">
+                        <a href="{{ route('artists.edit', $artistItem) }}" class="btn btn-sm btn-outline-light">Edit</a>
+                        <form method="POST" action="{{ route('artists.destroy', $artistItem) }}" class="d-inline" onsubmit="return confirm('Delete this artist?');">
+                          @csrf
+                          @method('DELETE')
+                          <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                      </td>
+                    </tr>
+                  @empty
+                    <tr>
+                      <td colspan="3" class="text-white-50">No artists yet.</td>
+                    </tr>
+                  @endforelse
+                </tbody>
+              </table>
+            </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card bg-dark text-white mt-4">
+          <div class="card-body">
+            <button class="btn btn-outline-light w-100 text-start mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#manageCategoriesBlock" aria-expanded="false" aria-controls="manageCategoriesBlock">
+              Manage Categories
+            </button>
+            <div class="collapse" id="manageCategoriesBlock">
+            <form method="GET" action="{{ route('create') }}" class="mb-3">
+              <div class="input-group">
+                <input type="search" name="category_q" value="{{ $categoryQuery ?? '' }}" class="form-control" placeholder="{{ __('app.search') }} {{ __('app.category') }}">
+                @if(!empty($artistQuery))
+                  <input type="hidden" name="artist_q" value="{{ $artistQuery }}">
+                @endif
+                @if(!empty($musicQuery))
+                  <input type="hidden" name="music_q" value="{{ $musicQuery }}">
+                @endif
+                <button class="btn btn-outline-light" type="submit">{{ __('app.search') }}</button>
+                <a class="btn btn-outline-secondary" href="{{ route('create') }}">Reset</a>
+              </div>
+            </form>
+            <div class="table-responsive">
+              <table class="table table-dark table-striped align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>{{ __('app.category') }}</th>
+                    <th>Tracks</th>
+                    <th class="text-end">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @forelse ($existingCategories ?? collect() as $categoryItem)
+                    <tr>
+                      <td>{{ $categoryItem->id }}</td>
+                      <td>{{ $categoryItem->name }}</td>
+                      <td>{{ $categoryItem->musics_count }}</td>
+                      <td class="text-end">
+                        <a href="{{ route('categories.edit', $categoryItem) }}" class="btn btn-sm btn-outline-light">Edit</a>
+                        <form method="POST" action="{{ route('categories.destroy', $categoryItem) }}" class="d-inline" onsubmit="return confirm('Delete this category?');">
+                          @csrf
+                          @method('DELETE')
+                          <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                      </td>
+                    </tr>
+                  @empty
+                    <tr>
+                      <td colspan="4" class="text-white-50">No categories yet.</td>
+                    </tr>
+                  @endforelse
+                </tbody>
+              </table>
+            </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card bg-dark text-white mt-4">
+          <div class="card-body">
+            <button class="btn btn-outline-light w-100 text-start mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#manageMusicsBlock" aria-expanded="false" aria-controls="manageMusicsBlock">
+              Manage Musics
+            </button>
+            <div class="collapse" id="manageMusicsBlock">
+            <form method="GET" action="{{ route('create') }}" class="mb-3">
+              <div class="input-group">
+                <input type="search" name="music_q" value="{{ $musicQuery ?? '' }}" class="form-control" placeholder="{{ __('app.search') }} {{ __('app.track') }}">
+                @if(!empty($artistQuery))
+                  <input type="hidden" name="artist_q" value="{{ $artistQuery }}">
+                @endif
+                @if(!empty($categoryQuery))
+                  <input type="hidden" name="category_q" value="{{ $categoryQuery }}">
+                @endif
+                <button class="btn btn-outline-light" type="submit">{{ __('app.search') }}</button>
+                <a class="btn btn-outline-secondary" href="{{ route('create') }}">Reset</a>
+              </div>
+            </form>
+            <div class="table-responsive">
+              <table class="table table-dark table-striped align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>{{ __('app.track') }}</th>
+                    <th>{{ __('app.artist') }}</th>
+                    <th class="text-end">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @forelse ($existingMusics ?? collect() as $musicItem)
+                    <tr>
+                      <td>{{ $musicItem->id }}</td>
+                      <td>{{ $musicItem->name }}</td>
+                      <td>{{ $musicItem->artists->pluck('name')->join(', ') }}</td>
+                      <td class="text-end">
+                        <a href="{{ route('musics.edit', $musicItem) }}" class="btn btn-sm btn-outline-light">Edit</a>
+                        <form method="POST" action="{{ route('musics.destroy', $musicItem) }}" class="d-inline" onsubmit="return confirm('Delete this music?');">
+                          @csrf
+                          @method('DELETE')
+                          <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                      </td>
+                    </tr>
+                  @empty
+                    <tr>
+                      <td colspan="4" class="text-white-50">No music yet.</td>
+                    </tr>
+                  @endforelse
+                </tbody>
+              </table>
+            </div>
+            </div>
           </div>
         </div>
       </div>
@@ -144,63 +335,17 @@
 
   <script id="wishesData" type="application/json">@json(trans('app.wishes'))</script>
   <script id="i18nData" type="application/json">@json(trans('app.js'))</script>
-  <script>
-    (function () {
-      const photoInput = document.getElementById('artistPhotoInput');
-      const photoPreview = document.getElementById('artistPhotoPreview');
-      if (photoInput && photoPreview) {
-        photoInput.addEventListener('change', () => {
-          const file = photoInput.files && photoInput.files[0];
-          if (!file) {
-            photoPreview.src = '';
-            photoPreview.classList.add('d-none');
-            return;
-          }
-          photoPreview.src = URL.createObjectURL(file);
-          photoPreview.classList.remove('d-none');
-        });
-      }
-
-      const container = document.getElementById('artistFields');
-      const addBtn = document.getElementById('addArtistBtn');
-      if (!container || !addBtn) return;
-
-      function updateRemoveState() {
-        const rows = container.querySelectorAll('.artist-row');
-        rows.forEach((row, idx) => {
-          const btn = row.querySelector('.remove-artist');
-          if (btn) btn.disabled = rows.length === 1 || idx === 0;
-        });
-      }
-
-      addBtn.addEventListener('click', () => {
-        const templateRow = container.querySelector('.artist-row');
-        if (!templateRow) return;
-        const clone = templateRow.cloneNode(true);
-        const select = clone.querySelector('select');
-        if (select) select.value = '';
-        const btn = clone.querySelector('.remove-artist');
-        if (btn) btn.disabled = false;
-        container.appendChild(clone);
-        updateRemoveState();
-      });
-
-      container.addEventListener('click', (e) => {
-        const btn = e.target.closest('.remove-artist');
-        if (!btn) return;
-        const row = btn.closest('.artist-row');
-        if (!row) return;
-        row.remove();
-        updateRemoveState();
-      });
-
-      updateRemoveState();
-    })();
-  </script>
   <script src="{{ asset('/js/bootstrap.bundle.min.js') }}"></script>
-  <script src="{{ asset('/js/owazym.js') }}?v={{ filemtime(public_path('js/owazym.js')) }}"></script>
+  <script src="{{ asset('/js/common.js') }}"></script>
+  <script src="{{ asset('/js/player.js') }}"></script>
+  <script src="{{ asset('/js/app-init.js') }}"></script>
+  <script src="{{ asset('/js/app-create.js') }}"></script>
 </body>
 
 </html>
+
+
+
+
 
 

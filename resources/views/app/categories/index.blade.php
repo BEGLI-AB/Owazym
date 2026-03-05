@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>OWAZYM - {{ __('app.artists') }}</title>
+  <title>OWAZYM - {{ __('app.category') }}</title>
 
   <link rel="stylesheet" href="{{ asset('/css/bootstrap.css') }}" />
   <link rel="stylesheet" href="{{ asset('/css/bootstrap-icons.min.css') }}" />
@@ -17,16 +17,16 @@
 
     <main class="app-content flex-grow-1 p-3 text-white">
       <div class="container" style="max-width: 760px;">
-        <h2 class="mb-3">{{ __('app.artists') }}</h2>
+        <h2 class="mb-3">{{ __('app.category') }}</h2>
         <div class="card bg-dark text-white">
           <ul class="list-group list-group-flush">
-            @forelse ($artists as $artist)
+            @forelse ($categories as $category)
               <li class="list-group-item bg-dark text-white d-flex justify-content-between align-items-center">
-                <span>{{ $artist->name }}</span>
-                <span class="badge text-bg-secondary">{{ $artist->musics_count }}</span>
+                <span>{{ $category->name }}</span>
+                <span class="badge text-bg-secondary">{{ $category->musics_count }}</span>
               </li>
             @empty
-              <li class="list-group-item bg-dark text-white-50">{{ __('app.no_artists_found') }}</li>
+              <li class="list-group-item bg-dark text-white-50">No categories found.</li>
             @endforelse
           </ul>
         </div>
@@ -40,11 +40,5 @@
   <script src="{{ asset('/js/common.js') }}"></script>
   <script src="{{ asset('/js/player.js') }}"></script>
   <script src="{{ asset('/js/app-init.js') }}"></script>
-  <script src="{{ asset('/js/app-artists-index.js') }}"></script>
 </body>
 </html>
-
-
-
-
-

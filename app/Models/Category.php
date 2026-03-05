@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Category extends Model
 {
+    protected $fillable = ['name'];
+
     public function musics(): HasMany
     {
         return $this->hasMany(Music::class, 'category_id');
