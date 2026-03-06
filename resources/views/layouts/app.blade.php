@@ -36,10 +36,10 @@
 
   @include('app.navbar')
 
-  <div class="d-flex">
+  <div class="app-shell d-flex">
     @include('app.sidebar')
 
-    <main class="app-content flex-grow-1 p-3 text-white">
+    <main id="appMain" class="app-content flex-grow-1 p-3 text-white" tabindex="-1">
       <script id="playlistData" type="application/json">@json($playlists->map(fn ($item) => ['id' => $item->id, 'name' => $item->name])->values())</script>
 
       <template id="vue-home-template">
@@ -120,35 +120,40 @@
         </section>
 
         <section class="spotify-section main-page mt-4">
-          <div>
-            <h3>{{ __('app.popular_by_genres') }}</h3>
-          </div>
-          @foreach ($popularGenres as $genre)
-          <div class="mt-3">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <h5 class="mb-0">{{ $genre->name }}</h5>
-              <small class="text-white-50">{{ $genre->musics_count }} {{ __('app.tracks_word') }}</small>
-            </div>
-            <div class="scroll-row overflow-auto">
-              @foreach (($genreMusics[$genre->id] ?? collect())->take(6) as $genreMusic)
-              @php($genreMusicUrl = url('/').'?'.http_build_query(array_merge(request()->query(), ['music_id' => $genreMusic->id])).'#album')
-              @php($genreCover = $genreMusic->cover_url)
-              <div
-                class="music-card bg-dark"
-                data-url="{{ $genreMusicUrl }}"
-                data-music-id="{{ $genreMusic->id }}"
-                data-audio-url="{{ $genreMusic->audio_path ? asset('storage/'.$genreMusic->audio_path) : '' }}"
-                data-title="{{ $genreMusic->name }}"
-                data-artist="{{ $genreMusic->artists->pluck('name')->join(', ') }}"
-                data-cover-url="{{ $genreCover }}">
-                <img src="{{ $genreCover }}" alt="{{ __('app.cover_image') }}">
-                <div class="title">{{ $genreMusic->name }}</div>
-                <div class="artist">{{ $genreMusic->artists->pluck('name')->join(', ') }}</div>
-              </div>
+          <div class="popular-genres-showcase">
+            <h3 class="popular-genres-title">{{ __('app.popular_by_genres') }}</h3>
+            <div class="genre-rail">
+              @foreach ($popularGenres as $genre)
+              @php($genreTracks = ($genreMusics[$genre->id] ?? collect())->take(4))
+              @php($genrePreview = $genreTracks->first()?->cover_url)
+              <article class="genre-panel" @if($genrePreview) style="--genre-bg:url('{{ $genrePreview }}');" @endif>
+                <div class="genre-panel__head">
+                  <h5 class="mb-0">{{ $genre->name }}</h5>
+                  <small>{{ $genre->musics_count }} {{ __('app.tracks_word') }}</small>
+                </div>
+
+                <div class="scroll-row genre-track-row">
+                  @foreach ($genreTracks as $genreMusic)
+                  @php($genreMusicUrl = url('/').'?'.http_build_query(array_merge(request()->query(), ['music_id' => $genreMusic->id])).'#album')
+                  @php($genreCover = $genreMusic->cover_url)
+                  <div
+                    class="music-card bg-dark genre-track-card"
+                    data-url="{{ $genreMusicUrl }}"
+                    data-music-id="{{ $genreMusic->id }}"
+                    data-audio-url="{{ $genreMusic->audio_path ? asset('storage/'.$genreMusic->audio_path) : '' }}"
+                    data-title="{{ $genreMusic->name }}"
+                    data-artist="{{ $genreMusic->artists->pluck('name')->join(', ') }}"
+                    data-cover-url="{{ $genreCover }}">
+                    <img src="{{ $genreCover }}" alt="{{ __('app.cover_image') }}">
+                    <div class="title">{{ $genreMusic->name }}</div>
+                    <div class="artist">{{ $genreMusic->artists->pluck('name')->join(', ') }}</div>
+                  </div>
+                  @endforeach
+                </div>
+              </article>
               @endforeach
             </div>
           </div>
-          @endforeach
         </section>
       </template>
 
@@ -457,9 +462,10 @@
 
     <div class="player-center">
       <div class="player-controls">
-        <button class="icon-ghost"><i class="bi bi-skip-backward-fill"></i></button>
+        <button class="icon-ghost" aria-label="{{ __('app.previous') }}"><i class="bi bi-skip-backward-fill"></i></button>
         <button
           class="play-btn"
+          aria-label="{{ __('app.start_listening') }}"
           data-music-id="{{ $featuredMusic?->id ?? '' }}"
           data-audio-url="{{ $featuredMusic?->audio_path ? asset('storage/'.$featuredMusic->audio_path) : '' }}"
           data-title="{{ $featuredMusic?->name ?? __('app.track') }}"
@@ -467,7 +473,7 @@
           data-cover-url="{{ $featuredCover }}">
           <i class="bi bi-play-fill"></i>
         </button>
-        <button class="icon-ghost"><i class="bi bi-skip-forward-fill"></i></button>
+        <button class="icon-ghost" aria-label="{{ __('app.next') }}"><i class="bi bi-skip-forward-fill"></i></button>
       </div>
       <div class="player-progress">
         <span class="progress-current">0:00</span>

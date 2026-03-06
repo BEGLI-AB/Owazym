@@ -170,8 +170,14 @@ function initMobileDrawerA11y() {
 
     if (window.bootstrap?.Offcanvas) {
         const instance = window.bootstrap.Offcanvas.getOrCreateInstance(drawer);
-        drawer.addEventListener('show.bs.offcanvas', () => setExpanded(true));
-        drawer.addEventListener('hide.bs.offcanvas', () => setExpanded(false));
+        drawer.addEventListener('show.bs.offcanvas', () => {
+            setExpanded(true);
+            document.body.classList.add('drawer-open');
+        });
+        drawer.addEventListener('hide.bs.offcanvas', () => {
+            setExpanded(false);
+            document.body.classList.remove('drawer-open');
+        });
 
         drawer.addEventListener('click', (e) => {
             const target = e.target;
@@ -182,12 +188,14 @@ function initMobileDrawerA11y() {
         });
 
         window.addEventListener('owazym:route-changed', () => {
+            document.body.classList.remove('drawer-open');
             instance.hide();
         });
     } else {
         window.addEventListener('keydown', (e) => {
             if (e.key !== 'Escape') return;
             setExpanded(false);
+            document.body.classList.remove('drawer-open');
         });
     }
 }

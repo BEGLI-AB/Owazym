@@ -54,7 +54,7 @@
     <a class="nav-link {{ request()->routeIs('search') ? 'active' : '' }}" href="{{ route('search') }}?q=" data-nav="search"><i class="bi bi-search"></i><span class="sidebar-label">{{ __('app.search') }}</span></a>
     <div><i class="bi bi-people"></i> <span class="sidebar-label">{{ __('app.artists') }}</span></div>
   </nav>
-  <div class="artists-scrollable" style="max-height: 400px; overflow-y: auto;">
+  <div class="artists-scrollable">
     <nav class="nav flex-column">
       @foreach($artists as $artist)
       <a class="nav-link text-white artist-item"
@@ -66,13 +66,19 @@
         @else
         <i class="bi bi-person-circle"></i>
         @endif
-        {{ $artist->name }}
+        <span class="artist-item-name">{{ $artist->name }}</span>
       </a>
       @endforeach
 
       @if($hasMore)
       <div class="text-white-50 mt-2">{{ __('app.and_other') }}</div>
       @endif
+    </nav>
+  </div>
+  <div class="menu-static sidebar-bottom-links mt-auto pt-3">
+    <nav class="nav flex-column nav-apple">
+      <a class="nav-link" href="{{ route('home') }}#home"><i class="bi bi-info-circle"></i> About us</a>
+      <a class="nav-link" href="mailto:support@owazym.com"><i class="bi bi-life-preserver"></i> Support</a>
     </nav>
   </div>
 </aside>
@@ -132,9 +138,8 @@
       </nav>
     </div>
 
-    <div class="artists-scrollable" style="max-height: 400px; overflow-y: auto;">
+    <div class="artists-scrollable">
       <nav class="nav flex-column">
-        <!-- vot eto dolzno prihodit s databazy imya artista -->
         @foreach($artists as $artist)
         <a class="nav-link text-white artist-item"
           data-name="{{ strtolower($artist->name) }}"
@@ -145,13 +150,19 @@
           @else
           <i class="bi bi-person-circle"></i>
           @endif
-          {{ $artist->name }}
+          <span class="artist-item-name">{{ $artist->name }}</span>
         </a>
         @endforeach
 
         @if($hasMore)
         <div class="text-white-50 mt-2">{{ __('app.and_other') }}</div>
         @endif
+      </nav>
+    </div>
+    <div class="menu-static sidebar-bottom-links mt-auto pt-3">
+      <nav class="nav flex-column nav-apple">
+        <a class="nav-link" href="{{ route('home') }}#home"><i class="bi bi-info-circle"></i> About us</a>
+        <a class="nav-link" href="mailto:support@owazym.com"><i class="bi bi-life-preserver"></i> Support</a>
       </nav>
     </div>
   </div>

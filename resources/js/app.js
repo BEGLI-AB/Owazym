@@ -6,6 +6,10 @@ import router from './router';
 const SPA_PATHS = new Set(['/', '/album', '/search', '/playlist']);
 const PENDING_TRACK_KEY = 'owazym_pending_track_v1';
 
+function applyRouteBodyState(pathname) {
+    document.body.classList.toggle('search-view', pathname === '/search');
+}
+
 function isSpaUrl(url) {
     return SPA_PATHS.has(url.pathname);
 }
@@ -44,6 +48,8 @@ window.__owazymNavigate = (target) => {
 };
 
 window.OwazymCommon?.setNavigateHandler?.((target) => window.__owazymNavigate(target));
+
+applyRouteBodyState(window.location.pathname);
 
 function handleSpaLinkEvent(e) {
     const target = e.target;
@@ -115,7 +121,7 @@ document.addEventListener('pointerup', (e) => {
 });
 
 router.afterEach((to) => {
-    document.body.classList.toggle('search-view', to.path === '/search');
+    applyRouteBodyState(to.path);
 
     const homeHash = to.path === '/album' ? '#album' : '#home';
     if (window.location.hash !== homeHash) {
@@ -124,6 +130,13 @@ router.afterEach((to) => {
 
     window.OwazymCommon?.updatePathActiveLinks?.();
     window.OwazymCommon?.setActiveByHash?.();
+
+    requestAnimationFrame(() => {
+        const main = document.getElementById('appMain');
+        if (main instanceof HTMLElement) {
+            main.focus({ preventScroll: true });
+        }
+    });
 });
 
 createApp(App).use(router).mount('#app');
