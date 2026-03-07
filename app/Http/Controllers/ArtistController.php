@@ -11,14 +11,23 @@ class ArtistController extends Controller
 {
     public function index()
     {
+        $q = trim((string) request('q', ''));
         $artists = Artist::query()
             ->withCount('musics')
+            ->when($q !== '', function ($query) use ($q) {
+                $query->where('name', 'like', '%' . $q . '%');
+            })
             ->orderBy('name')
+            ->get();
+        $popularArtists = Artist::query()
+            ->where('is_popular', true)
+            ->orderBy('name')
+            ->take(30)
             ->get();
         $sidebarArtists = Artist::whereHas('musics')->orderBy('name')->take(20)->get();
         $hasMore = Artist::whereHas('musics')->count() > 20;
 
-        return view('app.artists.index', compact('artists', 'sidebarArtists', 'hasMore'));
+        return view('app.artists.index', compact('artists', 'popularArtists', 'sidebarArtists', 'hasMore', 'q'));
     }
 
     public function store(Request $request)
@@ -79,5 +88,21 @@ class ArtistController extends Controller
         $artist->delete();
 
         return back()->with('status', 'Artist deleted.');
+    }
+
+    public function markPopular(Artist $artist)
+    {
+        $artist->is_popular = true;
+        $artist->save();
+
+        return back()->with('status', 'Artist added to Popular.');
+    }
+
+    public function unmarkPopular(Artist $artist)
+    {
+        $artist->is_popular = false;
+        $artist->save();
+
+        return back()->with('status', 'Artist removed from Popular.');
     }
 }

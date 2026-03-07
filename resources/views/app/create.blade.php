@@ -5,6 +5,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>OWAZYM - {{ __('app.create') }}</title>
+  <link rel="icon" type="image/x-icon" href="{{ asset('/img/logo.ico') }}">
+
 
   <link rel="stylesheet" href="{{ asset('/css/bootstrap.css') }}" />
   <link rel="stylesheet" href="{{ asset('/css/bootstrap-icons.min.css') }}" />
@@ -300,6 +302,7 @@
                     <th>#</th>
                     <th>{{ __('app.track') }}</th>
                     <th>{{ __('app.artist') }}</th>
+                    <th>{{ __('app.popular') }}</th>
                     <th class="text-end">Actions</th>
                   </tr>
                 </thead>
@@ -309,6 +312,13 @@
                       <td>{{ $musicItem->id }}</td>
                       <td>{{ $musicItem->name }}</td>
                       <td>{{ $musicItem->artists->pluck('name')->join(', ') }}</td>
+                      <td>
+                        @if(!empty($musicItem->is_popular))
+                          <span class="badge text-bg-success">Yes</span>
+                        @else
+                          <span class="badge text-bg-secondary">No</span>
+                        @endif
+                      </td>
                       <td class="text-end">
                         <a href="{{ route('musics.edit', $musicItem) }}" class="btn btn-sm btn-outline-light">Edit</a>
                         <form method="POST" action="{{ route('musics.destroy', $musicItem) }}" class="d-inline" onsubmit="return confirm('Delete this music?');">
@@ -320,7 +330,7 @@
                     </tr>
                   @empty
                     <tr>
-                      <td colspan="4" class="text-white-50">No music yet.</td>
+                      <td colspan="5" class="text-white-50">No music yet.</td>
                     </tr>
                   @endforelse
                 </tbody>

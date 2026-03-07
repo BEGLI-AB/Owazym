@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Artist extends Model
 {
-    protected $fillable = ['name', 'photo_path'];
+    protected $fillable = ['name', 'photo_path', 'is_popular'];
 
     public function musics(): BelongsToMany
     {

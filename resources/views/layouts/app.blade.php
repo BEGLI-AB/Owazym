@@ -56,6 +56,18 @@
               <i class="bi bi-chevron-left" aria-hidden="true"></i>
             </button>
             <div class="scroll-row" id="row">
+              @php($homeUser = auth()->user())
+              @php($showPopularAdd = $homeUser && ((isset($homeUser->is_admin) && (bool) $homeUser->is_admin) || (isset($homeUser->role) && in_array(strtolower(trim((string) $homeUser->role)), ['admin', 'administrator'], true)) || strtolower(trim((string) $homeUser->name)) === 'admin'))
+              @if($showPopularAdd)
+              <a
+                href="{{ route('musics.index') }}"
+                class="music-card bg-dark text-white text-decoration-none d-flex flex-column justify-content-center align-items-center"
+                style="min-height: 250px;">
+                <i class="bi bi-plus-lg" style="font-size: 46px; line-height: 1;"></i>
+                <div class="title mt-3">Choose track</div>
+                <div class="artist text-white-50">From existing</div>
+              </a>
+              @endif
               @foreach ($musicsList as $music)
               @php($musicQuery = array_merge(request()->query(), ['music_id' => $music->id]))
               @php($musicCover = $music->cover_url)
@@ -81,6 +93,18 @@
             <h3>{{ __('app.popular_artists') }}</h3>
           </div>
           <div class="scroll-row overflow-auto">
+            @if($showPopularAdd)
+            <a
+              href="{{ route('artists.index') }}"
+              class="text-white text-decoration-none d-flex flex-column align-items-center justify-content-center me-3"
+              style="min-width: 170px;">
+              <div class="rounded-circle d-flex align-items-center justify-content-center bg-dark border border-secondary-subtle"
+                style="width:150px; height:150px;">
+                <i class="bi bi-plus-lg" style="font-size: 46px; line-height: 1;"></i>
+              </div>
+              <div class="artist mt-2 text-center">Choose artist</div>
+            </a>
+            @endif
             @foreach ($popularArtists as $artist)
             @php($artistUrl = url('/').'?'.http_build_query(array_merge(request()->query(), ['artist_id' => $artist->id])).'#album')
             <a class="text-white text-decoration-none d-flex flex-column align-items-center me-3" href="{{ $artistUrl }}" style="min-width: 170px;">
@@ -203,7 +227,7 @@
 
           <div class="album-tracklist">
             <div class="tracklist-head">
-              <span>#</span>
+              <span class="text-center" aria-label="Plays"><i class="bi bi-headphones"></i></span>
               <span>{{ __('app.title') }}</span>
               <span class="text-end"><i class="bi bi-clock"></i></span>
             </div>
@@ -216,7 +240,7 @@
               data-title="{{ $music->name }}"
               data-artist="{{ $music->artists->pluck('name')->join(', ') }}"
               data-cover-url="{{ $music->cover_url }}">
-              <span class="track-num">{{ $index === 0 ? '' : $index + 1 }}</span>
+              <span class="track-num">{{ (int) ($music->plays ?? 0) }}</span>
               <div class="track-main">
                 <div class="track-title">{{ $music->name }}</div>
                 <div class="track-artist">{{ $music->artists->pluck('name')->join(', ') }}</div>
@@ -375,7 +399,7 @@
                   <i class="bi bi-play-fill me-1"></i> {{ __('app.start_listening') }}
                 </a>
                 @if($playlist)
-                <form method="POST" action="{{ route('playlists.destroy', $playlist) }}" onsubmit="return confirm('{{ __('app.confirm_delete_playlist') }}');">
+                <form method="POST" action="{{ route('playlists.destroy', $playlist) }}" onsubmit="return confirm(`{{ __('app.confirm_delete_playlist') }}`);">
                   @csrf
                   @method('DELETE')
                   <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3">
@@ -491,9 +515,12 @@
       <div class="volume-bar player-volume-bar" role="slider" aria-label="{{ __('app.volume') }}">
         <span class="bar-fill player-volume-fill" style="width: 100%"></span>
       </div>
-      <a class="icon-ghost player-close" data-hash="#home" href="{{ url('/') }}#home" aria-label="{{ __('app.close_player') }}">
+      <button class="icon-ghost player-mode-btn player-right-mobile-action" type="button" aria-label="Play mode">
+        <i class="bi bi-list-ol"></i>
+      </button>
+      <button class="icon-ghost player-close" aria-label="{{ __('app.close_player') }}">
         <i class="bi bi-x-lg"></i>
-      </a>
+      </button>
     </div>
   </footer>
 

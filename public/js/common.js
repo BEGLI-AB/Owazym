@@ -116,6 +116,21 @@ function applyTheme(theme) {
         logo.classList.remove('text-dark');
         logo.classList.add('text-light');
     }
+
+    // Force content background update via JS to avoid stale CSS cache on mobile.
+    const isLight = theme === 'light';
+    const bodyBg = isLight
+        ? 'linear-gradient(180deg, #f7f8fc 0%, #f2f4fb 100%)'
+        : 'linear-gradient(180deg, #040507 0%, #050608 55%, #050608 100%)';
+    const contentBg = isLight
+        ? 'radial-gradient(1200px 460px at 62% 78%, rgba(176, 86, 155, 0.14), transparent 74%), linear-gradient(180deg, #f7f8fc 0%, #f2f4fb 100%)'
+        : 'radial-gradient(1200px 460px at 62% 78%, rgba(158, 32, 112, 0.22), transparent 72%), linear-gradient(180deg, #040507 0%, #050608 55%, #050608 100%)';
+
+    document.body.style.background = bodyBg;
+    document.querySelectorAll('.app-content').forEach((el) => {
+        if (!(el instanceof HTMLElement)) return;
+        el.style.background = contentBg;
+    });
 }
 
 function initTheme() {

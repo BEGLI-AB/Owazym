@@ -62,7 +62,7 @@
         href="{{ url('/').'?artist_id='.$artist->id.'#album' }}"
         aria-current="{{ (int) request('artist_id') === (int) $artist->id ? 'page' : 'false' }}">
         @if (!empty($artist->photo_path))
-        <img src="{{ asset('storage/'.$artist->photo_path) }}" alt="{{ $artist->name }}" class="rounded-circle me-1" style="width:22px; height:22px; object-fit:cover;">
+        <img src="{{ asset('storage/'.$artist->photo_path) }}" alt="{{ $artist->name }}" class="rounded-circle me-1" style="width:22px; height:22px; object-fit:cover;" loading="lazy" decoding="async" fetchpriority="low">
         @else
         <i class="bi bi-person-circle"></i>
         @endif
@@ -146,7 +146,7 @@
           href="{{ url('/').'?artist_id='.$artist->id.'#album' }}"
           aria-current="{{ (int) request('artist_id') === (int) $artist->id ? 'page' : 'false' }}">
           @if (!empty($artist->photo_path))
-          <img src="{{ asset('storage/'.$artist->photo_path) }}" alt="{{ $artist->name }}" class="rounded-circle me-1" style="width:22px; height:22px; object-fit:cover;">
+          <img src="{{ asset('storage/'.$artist->photo_path) }}" alt="{{ $artist->name }}" class="rounded-circle me-1" style="width:22px; height:22px; object-fit:cover;" loading="lazy" decoding="async" fetchpriority="low">
           @else
           <i class="bi bi-person-circle"></i>
           @endif
@@ -173,7 +173,7 @@
     <i class="bi bi-house"></i>
     <span>{{ __('app.home') }}</span>
   </a>
-  <a class="mobile-bottom-link {{ request()->routeIs('search') ? 'active' : '' }}" href="{{ route('search') }}?q=" aria-label="{{ __('app.search') }}" data-nav="search">
+  <a class="mobile-bottom-link {{ request()->routeIs('search') ? 'active' : '' }}" href="{{ route('search') }}?gozleg=" aria-label="{{ __('app.search') }}" data-nav="search">
     <i class="bi bi-search"></i>
     <span>{{ __('app.search') }}</span>
   </a>

@@ -55,6 +55,7 @@ class UserController extends Controller
                 'cover_url' => $featuredMusic->cover_url,
                 'hero_cover_url' => $featuredCover,
                 'year' => $featuredMusic->year?->date,
+                'plays' => (int) ($featuredMusic->plays ?? 0),
             ] : null,
             'tracks' => $albumMusics->map(function (Music $music) {
                 return [
@@ -63,6 +64,7 @@ class UserController extends Controller
                     'artist' => $music->artists->pluck('name')->join(', '),
                     'audio_url' => $music->audio_path ? asset('storage/'.$music->audio_path) : '',
                     'cover_url' => $music->cover_url,
+                    'plays' => (int) ($music->plays ?? 0),
                 ];
             })->values(),
             'lock_album_cover' => $selectedArtistId > 0,
@@ -101,7 +103,23 @@ class UserController extends Controller
             });
         }
 
-        $musics = $musicsQuery->inRandomOrder()->take($randomLimit)->get();
+        $adminPopularMusics = (clone $musicsQuery)
+            ->where('is_popular', true)
+            ->latest('id')
+            ->take(5)
+            ->get();
+        $hotMusics = (clone $musicsQuery)
+            ->orderByDesc('plays')
+            ->latest('id')
+            ->take(20)
+            ->get();
+        $musics = $adminPopularMusics
+            ->concat($hotMusics->reject(fn ($music) => $adminPopularMusics->contains('id', $music->id)))
+            ->take(10)
+            ->values();
+        if ($musics->isEmpty()) {
+            $musics = $musicsQuery->inRandomOrder()->take(10)->get();
+        }
         $featuredMusic = $musics->firstWhere('id', $selectedMusicId) ?? $selectedMusic ?? $musics->first();
 
         $albumMusics = collect();
@@ -125,10 +143,27 @@ class UserController extends Controller
         $artists = (clone $artistsQuery)->inRandomOrder()->take($randomLimit)->get();
         $hasMore = (clone $artistsQuery)->count() > $randomLimit;
 
-        $popularArtists = Artist::whereHas('musics')
-            ->inRandomOrder()
-            ->take($randomLimit)
+        $adminPopularArtists = Artist::whereHas('musics')
+            ->where('is_popular', true)
+            ->latest('id')
+            ->take(5)
             ->get();
+        $hotArtists = Artist::whereHas('musics')
+            ->withCount('musics')
+            ->orderByDesc('musics_count')
+            ->latest('id')
+            ->take(20)
+            ->get();
+        $popularArtists = $adminPopularArtists
+            ->concat($hotArtists->reject(fn ($artist) => $adminPopularArtists->contains('id', $artist->id)))
+            ->take(10)
+            ->values();
+        if ($popularArtists->isEmpty()) {
+            $popularArtists = Artist::whereHas('musics')
+                ->inRandomOrder()
+                ->take(10)
+                ->get();
+        }
 
         $newMusics = Music::with(['artists', 'year'])
             ->inRandomOrder()

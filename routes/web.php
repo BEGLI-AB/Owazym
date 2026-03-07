@@ -22,6 +22,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/album', [UserController::class, 'index'])->name('album');
     Route::get('/album-data', [UserController::class, 'albumData'])->name('album.data');
     Route::get('/search', [UserController::class, 'search'])->name('search');
+    Route::post('/music/{music}/play', [MusicController::class, 'incrementPlay'])->name('music.play');
 
     Route::get('/locale/{locale}', [HomeController::class, 'locale'])
         ->name('locale')
@@ -49,8 +50,12 @@ Route::middleware('auth')->group(function () {
         Route::patch('/musics/{music}', [MusicController::class, 'update'])->name('musics.update');
         Route::delete('/musics/{music}', [MusicController::class, 'destroy'])->name('musics.destroy');
         Route::post('/artists', [ArtistController::class, 'store'])->name('artists.store');
+        Route::post('/artists/{artist}/popular', [ArtistController::class, 'markPopular'])->name('artists.popular.add');
+        Route::delete('/artists/{artist}/popular', [ArtistController::class, 'unmarkPopular'])->name('artists.popular.remove');
         Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
         Route::post('/musics', [MusicController::class, 'store'])->name('musics.store');
+        Route::post('/musics/{music}/popular', [MusicController::class, 'markPopular'])->name('musics.popular.add');
+        Route::delete('/musics/{music}/popular', [MusicController::class, 'unmarkPopular'])->name('musics.popular.remove');
     });
 
     Route::post('/playlist-tracks', [PlaylistTrackController::class, 'store'])->name('playlist-tracks.store');

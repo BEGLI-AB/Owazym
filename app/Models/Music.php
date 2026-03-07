@@ -16,6 +16,8 @@ class Music extends Model
         'year_id',
         'language_id',
         'category_id',
+        'plays',
+        'is_popular',
         'audio_path',
         'cover_path',
     ];

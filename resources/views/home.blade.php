@@ -5,6 +5,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>OWAZYM</title>
+  <link rel="icon" type="image/x-icon" href="{{ asset('/img/logo.ico') }}">
+
   <link rel="stylesheet" href="{{ asset('/css/bootstrap.css') }}" />
   <link rel="stylesheet" href="{{ asset('/css/owazym-2.css') }}" />
   <link rel="stylesheet" href="{{ asset('/css/bootstrap-icons.min.css') }}" />

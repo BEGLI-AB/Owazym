@@ -1593,7 +1593,10 @@ body.show-player-ui .player-ui {
   position: relative;
   margin-top: 12px;
   padding: 12px 8px 24px;
-  background: linear-gradient(180deg, rgba(65, 15, 93, 0.796), rgba(137, 0, 98, 0.95) 50%);
+  background:
+    radial-gradient(120% 95% at 8% 8%, rgba(61, 172, 196, 0.26) 0%, rgba(61, 172, 196, 0) 56%),
+    radial-gradient(95% 82% at 100% 14%, rgba(255, 140, 84, 0.2) 0%, rgba(255, 140, 84, 0) 60%),
+    linear-gradient(180deg, #0f2230 0%, #13283b 44%, #1a2e46 100%);
   border-radius: 16px;
 }
 
@@ -1606,6 +1609,7 @@ body.show-album .main-page {
 }
 
 .album-hero {
+  --album-cover-width: clamp(320px, 33vw, 470px);
   display: grid;
   grid-template-columns: 220px 1fr;
   gap: 24px;
@@ -1627,7 +1631,7 @@ body.show-album .main-page {
   }
 
   .album-cover {
-    width: min(100%, 360px);
+    width: min(100%, 390px);
     margin: 0;
     justify-self: start;
   }
@@ -1664,10 +1668,30 @@ body.show-album .main-page {
 
 .album-cover {
   aspect-ratio: 1 / 1;
-  width: clamp(320px, 30vw, 460px);
+  width: var(--album-cover-width);
   margin: 0 auto;
   border-radius: .5rem !important;
   overflow: hidden !important;
+  position: relative;
+}
+
+.album-cover::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 25%;
+  transform: translateY(-53%);
+  pointer-events: none;
+  background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.34) 60%,
+      rgba(255, 255, 255, 0.62) 100%);
+  filter: blur(15px);
+  opacity: .78;
+  mix-blend-mode: screen;
+  border-radius: inherit;
 }
 
 .album-cover img {
@@ -1699,6 +1723,28 @@ body.show-album .main-page {
   align-items: center;
   gap: 10px;
   color: rgba(255, 255, 255, 0.75);
+}
+
+.album-info {
+  position: relative;
+  z-index: 2;
+  width: min(100%, var(--album-cover-width));
+  margin: -25% auto 0;
+  padding: 14px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.22);
+}
+
+@media (min-width: 992px) {
+  .album-info {
+    width: auto;
+    margin: -26px 0 0;
+    padding: 16px 18px;
+  }
 }
 
 .artist-dot {
@@ -1986,6 +2032,10 @@ body.show-album .main-page {
   color: #fff;
 }
 
+.player-right-mobile-action {
+  display: none;
+}
+
 @media (max-width: 992px) {
 
   .player-bar {
@@ -2019,6 +2069,36 @@ body.show-album .main-page {
   .player-right .icon-ghost:not(.player-close),
   .player-right .volume-bar {
     display: none;
+  }
+
+  .player-right {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    width: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 4;
+  }
+
+  .player-right .player-right-mobile-action {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+  }
+
+  .player-close {
+    position: static;
+    right: auto;
+    bottom: auto;
+    margin-left: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
   }
 
   .album-hero {
@@ -2234,7 +2314,29 @@ body.show-album .main-page {
   }
 
   .player-right {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: auto;
+    z-index: 4;
+  }
+
+  .player-right .player-volume-btn,
+  .player-right .player-volume-bar {
     display: none;
+  }
+
+  .player-right .player-right-mobile-action,
+  .player-right .player-close {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
   }
 }
 
@@ -2284,6 +2386,7 @@ body.show-album .main-page {
   .player-bar {
     gap: 10px;
     padding: 12px 14px;
+    grid-template-columns: 1fr auto;
   }
 
   .app-content {
@@ -2318,6 +2421,11 @@ body.show-album .main-page {
   }
 
   .player-left {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .player-left {
     justify-content: flex-start;
     gap: 10px;
   }
@@ -2331,6 +2439,16 @@ body.show-album .main-page {
     grid-template-columns: auto 1fr;
     gap: 10px;
     align-items: center;
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .player-right {
+    grid-column: 2;
+    grid-row: 1;
+    width: auto;
+    justify-content: flex-end;
+    gap: 8px;
   }
 
   .player-controls {
@@ -2352,8 +2470,22 @@ body.show-album .main-page {
   }
 
   .player-close {
-    right: 10px;
-    bottom: calc(66px + env(safe-area-inset-bottom));
+    position: static;
+    right: auto;
+    bottom: auto;
+    margin-left: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+  }
+
+  .player-right .player-right-mobile-action {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
   }
 }
 

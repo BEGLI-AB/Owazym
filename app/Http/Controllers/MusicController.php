@@ -11,17 +11,39 @@ use App\Models\Category;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class MusicController extends Controller
 {
 
     public function index()
     {
-        $musics = Music::with(['artists', 'year', 'language', 'category'])->get();
+        $q = trim((string) request('q', ''));
+        $musics = Music::with(['artists', 'year', 'language', 'category'])
+            ->when($q !== '', function ($query) use ($q) {
+                $query->where(function ($inner) use ($q) {
+                    $inner->where('name', 'like', '%' . $q . '%')
+                        ->orWhereHas('artists', function ($artistQuery) use ($q) {
+                            $artistQuery->where('name', 'like', '%' . $q . '%');
+                        });
+                });
+            })
+            ->latest('id')
+            ->get();
+        $popularMusics = Music::with('artists')
+            ->where('is_popular', true)
+            ->latest('id')
+            ->take(30)
+            ->get();
+        $autoPopularMusics = Music::with('artists')
+            ->orderByDesc('plays')
+            ->latest('id')
+            ->take(30)
+            ->get();
         $artists = Artist::whereHas('musics')->orderBy('name')->take(20)->get();
         $hasMore = Artist::whereHas('musics')->count() > 20;
 
-        return view('app.music.index', compact('musics', 'artists', 'hasMore'));
+        return view('app.music.index', compact('musics', 'popularMusics', 'autoPopularMusics', 'artists', 'hasMore', 'q'));
     }
 
     public function create()
@@ -176,6 +198,43 @@ class MusicController extends Controller
         $music->delete();
 
         return back()->with('status', 'Music deleted.');
+    }
+
+    public function incrementPlay(Music $music)
+    {
+        if (!Schema::hasColumn('music', 'plays')) {
+            return response()->json([
+                'ok' => false,
+                'music_id' => $music->id,
+                'plays' => 0,
+                'message' => 'plays column is missing',
+            ], 409);
+        }
+
+        $music->increment('plays');
+        $music->refresh();
+
+        return response()->json([
+            'ok' => true,
+            'music_id' => $music->id,
+            'plays' => (int) ($music->plays ?? 0),
+        ]);
+    }
+
+    public function markPopular(Music $music)
+    {
+        $music->is_popular = true;
+        $music->save();
+
+        return back()->with('status', 'Track added to Popular.');
+    }
+
+    public function unmarkPopular(Music $music)
+    {
+        $music->is_popular = false;
+        $music->save();
+
+        return back()->with('status', 'Track removed from Popular.');
     }
 
     private function resizeAndStoreCover($file): string

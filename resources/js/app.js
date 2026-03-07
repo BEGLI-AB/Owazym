@@ -5,9 +5,41 @@ import router from './router';
 
 const SPA_PATHS = new Set(['/', '/album', '/search', '/playlist']);
 const PENDING_TRACK_KEY = 'owazym_pending_track_v1';
+let genreBgObserver = null;
 
 function applyRouteBodyState(pathname) {
     document.body.classList.toggle('search-view', pathname === '/search');
+}
+
+function initLazyGenreBackgrounds() {
+    const cards = Array.from(document.querySelectorAll('.genre-panel[data-genre-bg]'));
+    if (!cards.length) return;
+
+    const applyBackground = (el) => {
+        const bg = (el.getAttribute('data-genre-bg') || '').trim();
+        if (!bg) return;
+        el.style.setProperty('--genre-bg', `url("${bg}")`);
+        el.removeAttribute('data-genre-bg');
+    };
+
+    if (!('IntersectionObserver' in window)) {
+        cards.forEach(applyBackground);
+        return;
+    }
+
+    if (!genreBgObserver) {
+        genreBgObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (!entry.isIntersecting) return;
+                const target = entry.target;
+                if (!(target instanceof HTMLElement)) return;
+                applyBackground(target);
+                genreBgObserver?.unobserve(target);
+            });
+        }, { rootMargin: '240px 0px' });
+    }
+
+    cards.forEach((card) => genreBgObserver?.observe(card));
 }
 
 function isSpaUrl(url) {
@@ -50,6 +82,7 @@ window.__owazymNavigate = (target) => {
 window.OwazymCommon?.setNavigateHandler?.((target) => window.__owazymNavigate(target));
 
 applyRouteBodyState(window.location.pathname);
+initLazyGenreBackgrounds();
 
 function handleSpaLinkEvent(e) {
     const target = e.target;
@@ -136,6 +169,7 @@ router.afterEach((to) => {
         if (main instanceof HTMLElement) {
             main.focus({ preventScroll: true });
         }
+        initLazyGenreBackgrounds();
     });
 });
 
