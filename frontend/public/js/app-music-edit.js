@@ -1,0 +1,3 @@
+window.OwazymCommon?.initArtistFieldManager();
+
+
