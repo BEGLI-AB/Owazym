@@ -36,7 +36,7 @@
         <span class="bar-fill player-volume-fill" style="width: 100%"></span>
       </div>
       <button class="icon-ghost player-mode-btn player-right-mobile-action" type="button" :aria-label="t('play_mode')">
-        <i class="bi bi-list-ol"></i>
+        <i class="bi bi-list"></i>
       </button>
       <button class="icon-ghost player-close" :aria-label="t('close_player')">
         <i class="bi bi-x-lg"></i>

@@ -17,8 +17,12 @@ router.get("/musics-index", libraryController.musicsIndex);
 router.get("/categories", libraryController.categories);
 router.get("/search", libraryController.search);
 router.get("/filters", libraryController.search);
+router.get("/site-effects", libraryController.siteEffects);
 router.get("/subscription", requireAuth, libraryController.subscriptionSummary);
 router.post("/subscription", requireAuth, libraryController.updateSubscription);
+router.get("/top10-vote", requireAuth, libraryController.top10Vote);
+router.get("/top10-vote/status", requireAuth, libraryController.top10VoteStatus);
+router.post("/top10-vote", requireAuth, libraryController.submitTop10Vote);
 
 router.post("/tracks/:id/play", requireAuth, libraryController.incrementPlay);
 router.get("/tracks/:id/download", requireAuth, libraryController.downloadTrack);

@@ -53,4 +53,24 @@ export const libraryService = {
     const { data } = await api.post("/subscription", { plan });
     return data.data;
   },
+  async submitSupport(payload) {
+    const { data } = await api.post("/support", payload);
+    return data.data;
+  },
+  async getTop10Vote() {
+    const { data } = await api.get("/top10-vote");
+    return data.data;
+  },
+  async getTop10VoteStatus() {
+    const { data } = await api.get("/top10-vote/status");
+    return data.data;
+  },
+  async getSiteEffects() {
+    const { data } = await api.get("/site-effects");
+    return data.data;
+  },
+  async submitTop10Vote(musicId) {
+    const { data } = await api.post("/top10-vote", { music_id: musicId });
+    return data.data;
+  },
 };

@@ -1,7 +1,35 @@
 import { adminService } from "../services/admin.service.js";
+import { supportService } from "../services/support.service.js";
 import { ok } from "../utils/response.js";
 
 export const adminController = {
+  async listSms(_req, res, next) {
+    try {
+      const data = await supportService.listMessages();
+      return ok(res, data);
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  async markSmsRead(req, res, next) {
+    try {
+      const data = await supportService.markMessageRead(req.params.id);
+      return ok(res, data, "SMS marked as read");
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  async deleteSms(req, res, next) {
+    try {
+      const data = await supportService.deleteMessage(req.params.id);
+      return ok(res, data, "SMS deleted");
+    } catch (error) {
+      return next(error);
+    }
+  },
+
   async createData(req, res, next) {
     try {
       const data = await adminService.getCreateData({
@@ -20,6 +48,15 @@ export const adminController = {
     try {
       const data = await adminService.createArtist(req.body);
       return ok(res, data, "Artist created", 201);
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  async updateArtist(req, res, next) {
+    try {
+      const data = await adminService.updateArtist(req.params.id, req.body);
+      return ok(res, data, "Artist updated");
     } catch (error) {
       return next(error);
     }
@@ -70,6 +107,24 @@ export const adminController = {
     }
   },
 
+  async setArtistDisplayListeners(req, res, next) {
+    try {
+      const data = await adminService.setArtistDisplayListeners(req.params.id, req.body?.display_listeners ?? req.body?.displayListeners);
+      return ok(res, data, "Artist visual listeners updated");
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  async publishArtistTrackBanner(req, res, next) {
+    try {
+      const data = await adminService.publishArtistTrackBanner(req.params.id);
+      return ok(res, data, "Artist track banner published", 201);
+    } catch (error) {
+      return next(error);
+    }
+  },
+
   async createMusic(req, res, next) {
     try {
       const data = await adminService.createMusic(req.body);
@@ -92,6 +147,33 @@ export const adminController = {
     try {
       const data = await adminService.setMusicPopular(req.params.id, false);
       return ok(res, data, "Music removed from popular");
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  async setMusicDisplayPlays(req, res, next) {
+    try {
+      const data = await adminService.setMusicDisplayPlays(req.params.id, req.body?.display_plays ?? req.body?.displayPlays);
+      return ok(res, data, "Music visual plays updated");
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  async setTop10VoteEnabled(req, res, next) {
+    try {
+      const data = await adminService.setTop10VoteEnabled(req.body?.enabled);
+      return ok(res, data, data.enabled ? "Top 10 vote enabled" : "Top 10 vote disabled");
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  async setSeasonEffect(req, res, next) {
+    try {
+      const data = await adminService.setSeasonEffect(req.body?.season_effect ?? req.body?.seasonEffect);
+      return ok(res, data, "Season effect updated");
     } catch (error) {
       return next(error);
     }

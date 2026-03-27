@@ -33,6 +33,7 @@ export const libraryController = {
         genreId: req.query.genre_id,
         countryId: req.query.country_id,
         yearId: req.query.year_id,
+        artistId: req.query.artist_id,
         page: req.query.page,
       });
       return ok(res, data);
@@ -63,6 +64,42 @@ export const libraryController = {
     try {
       const data = await libraryService.getDownloadInfo(req.params.id, req.user.id);
       return ok(res, data);
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  async top10Vote(req, res, next) {
+    try {
+      const data = await libraryService.getTop10VoteData(req.user.id);
+      return ok(res, data);
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  async top10VoteStatus(_req, res, next) {
+    try {
+      const data = await libraryService.getTop10VoteStatus();
+      return ok(res, data);
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  async siteEffects(_req, res, next) {
+    try {
+      const data = await libraryService.getSiteEffects();
+      return ok(res, data);
+    } catch (error) {
+      return next(error);
+    }
+  },
+
+  async submitTop10Vote(req, res, next) {
+    try {
+      const data = await libraryService.submitTop10Vote(req.user.id, req.body.music_id);
+      return ok(res, data, "Vote submitted");
     } catch (error) {
       return next(error);
     }
@@ -120,6 +157,7 @@ export const libraryController = {
         genreId: req.query.genre_id,
         countryId: req.query.country_id,
         yearId: req.query.year_id,
+        artistId: req.query.artist_id,
         page: req.query.page,
       });
       const filters = await libraryService.getFilters();

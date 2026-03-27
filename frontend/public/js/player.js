@@ -208,7 +208,7 @@ function getPlayModeUi(mode) {
     if (mode === 'repeat_one') {
         return { icon: 'bi-repeat-1', label: 'Repeat current track' };
     }
-    return { icon: 'bi-list-ol', label: 'Play in order' };
+    return { icon: 'bi-list', label: 'Play in order' };
 }
 
 function updatePlayModeUI() {
@@ -291,14 +291,30 @@ function initPlayModeButton() {
     });
 }
 
+function isAlbumViewActive() {
+    const hash = location.hash || '#home';
+    return document.body.classList.contains('show-album') || hash === '#album' || window.location.pathname === '/album';
+}
+
 function refreshPlayerRefs() {
-    seekBarEl = document.querySelector('.player-seekbar');
-    progressFillEl = document.querySelector('.player-progress-fill');
-    progressCurrentEl = document.querySelector('.progress-current');
-    progressDurationEl = document.querySelector('.progress-duration');
-    volumeBarEl = document.querySelector('.player-volume-bar');
-    volumeFillEl = document.querySelector('.player-volume-fill');
-    volumeBtnEl = document.querySelector('.player-volume-btn');
+    const albumRoot = document.querySelector('.album-page');
+    const footerRoot = document.querySelector('.player-bar');
+    const preferAlbum = isAlbumViewActive();
+    const progressRoot =
+        (preferAlbum && albumRoot?.querySelector('.player-seekbar') && albumRoot) ||
+        (footerRoot?.querySelector('.player-seekbar') && footerRoot) ||
+        (albumRoot?.querySelector('.player-seekbar') && albumRoot) ||
+        document;
+
+    seekBarEl = progressRoot.querySelector('.player-seekbar');
+    progressFillEl = progressRoot.querySelector('.player-progress-fill');
+    progressCurrentEl = progressRoot.querySelector('.progress-current');
+    progressDurationEl = progressRoot.querySelector('.progress-duration');
+
+    const volumeRoot = footerRoot || document;
+    volumeBarEl = volumeRoot.querySelector('.player-volume-bar');
+    volumeFillEl = volumeRoot.querySelector('.player-volume-fill');
+    volumeBtnEl = volumeRoot.querySelector('.player-volume-btn');
 }
 
 function formatTime(seconds) {
@@ -454,6 +470,14 @@ function setPlayerUIByHash() {
     const playerActive = sessionStorage.getItem('playerActive') === '1';
     document.body.classList.toggle('show-album', onAlbumPage);
     document.body.classList.toggle('show-player-ui', playerActive);
+
+    const prevSeekBarEl = seekBarEl;
+    refreshPlayerRefs();
+    if (seekBarEl && seekBarEl !== prevSeekBarEl) {
+        initPlayerActivate();
+    }
+    updateProgressUI();
+    updateVolumeUI();
 }
 
 function restoreAudioState() {
@@ -1313,6 +1337,26 @@ function initPlayerActivate() {
         });
     }
 
+    document.querySelectorAll('.album-prev').forEach((prevBtn) => {
+        if (prevBtn.dataset.playerBound) return;
+        prevBtn.dataset.playerBound = '1';
+        prevBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const prevRow = getAdjacentTrackRow(-1);
+            playFromRow(prevRow);
+        });
+    });
+
+    document.querySelectorAll('.album-next').forEach((nextBtn) => {
+        if (nextBtn.dataset.playerBound) return;
+        nextBtn.dataset.playerBound = '1';
+        nextBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const nextRow = getAdjacentTrackRow(1);
+            playFromRow(nextRow);
+        });
+    });
+
     const bottomPlay = document.querySelector('.play-btn');
     if (bottomPlay && !bottomPlay.dataset.playerBound) {
         bottomPlay.dataset.playerBound = '1';
@@ -1601,33 +1645,44 @@ function runPlayerSetup() {
     applyLightModeFixes();
 }
 
+function runRouteRebindPass() {
+    initPlayModeButton();
+    initSharedUI();
+    refreshPlayerRefs();
+    loadTrackDurations();
+    initAlbumNav();
+    initPlayerActivate();
+    initAlbumAdd();
+    initAlbumDownload();
+    initPlayerClose();
+    initPlayerOpenAlbum();
+    applyPendingTrackSelection();
+    syncAlbumSelectionFromQuery();
+    refreshAlbumDataFromQuery();
+    initSearchForms();
+    initArtistFieldManager();
+    initArtistPhotoPreview();
+    setPlayerUIByHash();
+    setActiveByHash();
+    updatePathActiveLinks();
+    updateProgressUI();
+    updateVolumeUI();
+    applyLightModeFixes();
+}
+
 function rebindAfterRouteChange() {
     if (routeRebindScheduled) return;
     routeRebindScheduled = true;
 
     requestAnimationFrame(() => {
         routeRebindScheduled = false;
-        initSharedUI();
-        refreshPlayerRefs();
-        loadTrackDurations();
-        initAlbumNav();
-        initPlayerActivate();
-        initAlbumAdd();
-        initAlbumDownload();
-        initPlayerClose();
-        initPlayerOpenAlbum();
-        applyPendingTrackSelection();
-        syncAlbumSelectionFromQuery();
-        refreshAlbumDataFromQuery();
-        initSearchForms();
-        initArtistFieldManager();
-        initArtistPhotoPreview();
-        setPlayerUIByHash();
-        setActiveByHash();
-        updatePathActiveLinks();
-        updateProgressUI();
-        updateVolumeUI();
-        applyLightModeFixes();
+        runRouteRebindPass();
+
+        // Route transitions are animated; run a second pass after animation
+        // so controls added late are still bound without page refresh.
+        window.setTimeout(() => {
+            runRouteRebindPass();
+        }, 420);
     });
 }
 

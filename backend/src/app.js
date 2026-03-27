@@ -7,10 +7,22 @@ import { notFound } from "./middlewares/notFound.middleware.js";
 import { errorHandler } from "./middlewares/error.middleware.js";
 
 const app = express();
+const devOriginPattern = /^https?:\/\/((localhost|127\.0\.0\.1)|(\d{1,3}\.){3}\d{1,3})(:((4173)|(5173)))?$/i;
+const allowedOrigins = new Set([env.clientUrl, "http://localhost:5173", "http://127.0.0.1:5173"]);
 
 app.use(
   cors({
-    origin: env.clientUrl,
+    origin(origin, callback) {
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.has(origin) || (process.env.NODE_ENV !== "production" && devOriginPattern.test(origin))) {
+        return callback(null, true);
+      }
+
+      return callback(null, false);
+    },
     credentials: true,
   }),
 );

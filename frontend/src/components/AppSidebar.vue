@@ -40,8 +40,15 @@
     <nav class="nav flex-column nav-apple" id="desktopNav">
       <a class="nav-link" :class="{ active: route.path === '/' }" href="/" data-nav="home"><i class="bi bi-house"></i><span class="sidebar-label">{{ t("home") }}</span></a>
       <a v-if="isAdmin" class="nav-link" :class="{ active: route.path === '/create' }" href="/create"><i class="bi bi-plus-lg"></i><span class="sidebar-label">{{ t("create") }}</span></a>
+      <a v-if="isAdmin" class="nav-link" :class="{ active: route.path === '/admin-sms' }" href="/admin-sms"><i class="bi bi-chat-dots"></i><span class="sidebar-label">{{ adminSmsLabel }}</span></a>
       <a class="nav-link" :class="{ active: route.path === '/playlist' }" href="/playlist"><i class="bi bi-music-note"></i><span class="sidebar-label">{{ t("my_playlist") }}</span></a>
       <a class="nav-link" :class="{ active: route.path === '/search' }" href="/search?q=" data-nav="search"><i class="bi bi-search"></i><span class="sidebar-label">{{ t("search") }}</span></a>
+      <a
+        v-if="top10VoteEnabled"
+        class="nav-link top10-vote-nav-link"
+        :class="{ active: isTop10VoteCurrent }"
+        :href="top10VoteHref"
+      ><i class="bi bi-check2-square"></i><span class="sidebar-label">{{ t("top_10_vote") }}</span></a>
       <div><i class="bi bi-people"></i> <span class="sidebar-label">{{ t("artists") }}</span></div>
     </nav>
 
@@ -77,7 +84,7 @@
     <div class="menu-static sidebar-bottom-links mt-auto pt-3">
       <nav class="nav flex-column nav-apple">
         <a class="nav-link" href="/#home"><i class="bi bi-info-circle"></i> {{ t("about_us") }}</a>
-        <a class="nav-link" href="mailto:support@owazym.com"><i class="bi bi-life-preserver"></i> {{ t("support") }}</a>
+        <a class="nav-link" :class="{ active: route.path === '/support' }" href="/support"><i class="bi bi-life-preserver"></i> {{ t("support") }}</a>
       </nav>
     </div>
   </aside>
@@ -129,6 +136,13 @@
       <div class="menu-static">
         <nav class="nav flex-column nav-apple">
           <a v-if="isAdmin" class="nav-link" :class="{ active: route.path === '/create' }" href="/create"><i class="bi bi-plus-lg"></i> {{ t("create") }}</a>
+          <a v-if="isAdmin" class="nav-link" :class="{ active: route.path === '/admin-sms' }" href="/admin-sms"><i class="bi bi-chat-dots"></i> {{ adminSmsLabel }}</a>
+          <a
+            v-if="top10VoteEnabled"
+            class="nav-link top10-vote-nav-link"
+            :class="{ active: isTop10VoteCurrent }"
+            :href="top10VoteHref"
+          ><i class="bi bi-check2-square"></i> {{ t("top_10_vote") }}</a>
           <div><i class="bi bi-people"></i> {{ t("artists") }}</div>
         </nav>
       </div>
@@ -165,7 +179,7 @@
       <div class="menu-static sidebar-bottom-links mt-auto pt-3">
         <nav class="nav flex-column nav-apple">
           <a class="nav-link" href="/#home"><i class="bi bi-info-circle"></i> {{ t("about_us") }}</a>
-          <a class="nav-link" href="mailto:support@owazym.com"><i class="bi bi-life-preserver"></i> {{ t("support") }}</a>
+          <a class="nav-link" :class="{ active: route.path === '/support' }" href="/support"><i class="bi bi-life-preserver"></i> {{ t("support") }}</a>
         </nav>
       </div>
     </div>
@@ -209,6 +223,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  top10VoteEnabled: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const route = useRoute();
@@ -216,12 +234,26 @@ const { locale, setLocale, t } = useI18n();
 
 const searchQuery = computed(() => String(route.query.q || ""));
 const visibleArtists = computed(() => (props.artists || []).slice(0, 20));
+const adminSmsLabel = computed(() => {
+  if (locale.value === "ru") return "\u0421\u041C\u0421 \u0430\u0434\u043C\u0438\u043D\u0430";
+  if (locale.value === "tm") return "Admin SMS";
+  return "Admin SMS";
+});
 
-const artistHref = (id) => `/?artist_id=${id}#album`;
-const isArtistCurrent = (id) => route.path === "/" && Number(route.query.artist_id || 0) === Number(id);
+const artistHref = (id) => `/artist/${id}`;
+const top10VoteHref = "/top10-vote";
+const isTop10VoteCurrent = computed(() => route.path === "/top10-vote");
+const isArtistCurrent = (id) => route.path === `/artist/${id}`;
 
 const onArtistImgError = (event) => {
   event.target.onerror = null;
   event.target.src = "/img/1.jpg";
 };
+
 </script>
+
+<style scoped>
+.top10-vote-nav-link {
+  margin-bottom: 0.75rem;
+}
+</style>

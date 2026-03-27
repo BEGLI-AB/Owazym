@@ -14,6 +14,7 @@ let wishes = ['Wish of the day...'];
 let dataLoaded = false;
 let hashListenerBound = false;
 let homeBannerModalBound = false;
+let themeListenerBound = false;
 let row = null;
 let nextBtn = null;
 let prevBtn = null;
@@ -89,6 +90,38 @@ function getCurrentUserFromDom() {
 function fullName(user) {
     const firstName = (user?.firstName || '').trim();
     return firstName || i18n.user_fallback;
+}
+
+function isLightThemeActive() {
+    const themeFromDom = document.documentElement.getAttribute('data-theme');
+    if (themeFromDom === 'light') return true;
+    if (themeFromDom === 'dark') return false;
+    if (document.body.classList.contains('light')) return true;
+
+    try {
+        return (localStorage.getItem('theme') || 'dark') === 'light';
+    } catch (_) {
+        return false;
+    }
+}
+
+function syncAccountMenuTheme(listEl) {
+    if (!(listEl instanceof HTMLElement)) return;
+
+    listEl.classList.add('dropdown-menu');
+    listEl.classList.toggle('dropdown-menu-dark', !isLightThemeActive());
+}
+
+function syncTopRightTheme() {
+    const topRightName = document.getElementById('topRightUserName');
+    if (topRightName) {
+        topRightName.classList.remove('text-white-50', 'text-body-secondary');
+        topRightName.classList.add(isLightThemeActive() ? 'text-body-secondary' : 'text-white-50');
+    }
+
+    ['accountMenuDesktop', 'accountMenuMobile', 'accountMenuTop'].forEach((id) => {
+        syncAccountMenuTheme(document.getElementById(id));
+    });
 }
 
 function ensureDataLoaded() {
@@ -248,6 +281,7 @@ function renderTopRight() {
     if (!el) return;
 
     const currentUser = getCurrentUserFromDom();
+    const userNameClass = isLightThemeActive() ? 'text-body-secondary' : 'text-white-50';
     const burger = `
       <button id="mobileDrawerToggle" class="navbar-toggler app-drawer-toggle" type="button"
       data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar" aria-controls="mobileSidebar" aria-expanded="false" aria-label="${i18n.menu}">
@@ -259,15 +293,17 @@ function renderTopRight() {
         <button type="button" class="btn btn-sm btn-outline-light rounded-pill px-2 py-1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="${i18n.profile}">
           <i class="bi bi-person-circle"></i>
         </button>
-        <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" id="accountMenuTop"></ul>
+        <ul class="dropdown-menu dropdown-menu-end" id="accountMenuTop"></ul>
       </div>
     `;
 
     el.innerHTML = `
-      <span class="text-white-50 small me-2">${fullName(currentUser)}</span>
+      <span id="topRightUserName" class="${userNameClass} small me-2">${fullName(currentUser)}</span>
       ${topAccount}
       ${burger}
     `;
+
+    syncTopRightTheme();
 }
 
 function initMobileDrawerA11y() {
@@ -316,11 +352,19 @@ function renderAccountMenu(listEl) {
     if (!listEl) return;
     const currentUser = getCurrentUserFromDom();
     const plan = (currentUser.plan || 'free').toLowerCase();
+    const isLight = isLightThemeActive();
+    const titleClass = isLight ? 'text-body-secondary' : 'text-white-50';
+    const nameClass = isLight ? 'fw-semibold text-dark' : 'fw-semibold text-white';
+    const planClass = isLight ? 'small text-body-secondary' : 'small text-white-50';
+    const planValueClass = isLight ? 'text-dark' : 'text-white';
+
+    syncAccountMenuTheme(listEl);
+
     listEl.innerHTML = `
-      <li class="px-3 py-2 small text-white-50">${i18n.profile}</li>
+      <li class="px-3 py-2 small ${titleClass}">${i18n.profile}</li>
       <li class="px-3 pb-2">
-        <div class="fw-semibold">${fullName(currentUser)}</div>
-        <div class="small text-white-50">${i18n.subscription}: <span class="text-white">${plan}</span></div>
+        <div class="${nameClass}">${fullName(currentUser)}</div>
+        <div class="${planClass}">${i18n.subscription}: <span class="${planValueClass}">${plan}</span></div>
       </li>
       <li><hr class="dropdown-divider"></li>
       <li><a class="dropdown-item" href="/subscription"><i class="bi bi-stars me-2"></i>${i18n.subscription}</a></li>
@@ -629,8 +673,17 @@ function initSharedUI() {
     ensureDataLoaded();
     setDailyWish();
     renderTopRight();
-    renderAccountMenus();
+
+    if (!themeListenerBound) {
+        themeListenerBound = true;
+        window.addEventListener('owazym:theme-changed', () => {
+            syncTopRightTheme();
+            renderAccountMenus();
+        });
+    }
+
     initTheme();
+    renderAccountMenus();
     setActiveByHash();
     updatePathActiveLinks();
     bindCarousel();

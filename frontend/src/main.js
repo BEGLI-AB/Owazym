@@ -6,6 +6,7 @@ import "./assets/styles.css";
 import { useAuthStore } from "./store/auth";
 import { useLocaleStore } from "./store/locale";
 import { applyTheme, readTheme } from "./utils/theme";
+import { applyTurkmenDomNormalization } from "./utils/turkmenDom";
 
 const app = createApp(App);
 const pinia = createPinia();
@@ -18,6 +19,37 @@ auth.bootstrap();
 const locale = useLocaleStore();
 locale.bootstrap();
 applyTheme(readTheme());
+let authExpiryRedirecting = false;
+
+let turkmenNormalizationFrame = 0;
+let turkmenObserver = null;
+
+const scheduleTurkmenNormalization = () => {
+  if (locale.locale !== "tm") return;
+  if (turkmenNormalizationFrame) return;
+
+  turkmenNormalizationFrame = window.requestAnimationFrame(() => {
+    turkmenNormalizationFrame = 0;
+    const root = document.getElementById("app");
+    if (root) applyTurkmenDomNormalization(root);
+  });
+};
+
+const ensureTurkmenObserver = () => {
+  if (turkmenObserver) return;
+  const root = document.getElementById("app");
+  if (!root) return;
+
+  turkmenObserver = new MutationObserver(() => {
+    scheduleTurkmenNormalization();
+  });
+
+  turkmenObserver.observe(root, {
+    childList: true,
+    subtree: true,
+    characterData: true,
+  });
+};
 
 const SPA_PATHS = new Set([
   "/",
@@ -154,6 +186,36 @@ router.afterEach((to) => {
   window.dispatchEvent(new Event("owazym:route-changed"));
 });
 
+window.addEventListener("owazym:auth-expired", () => {
+  if (authExpiryRedirecting) return;
+
+  authExpiryRedirecting = true;
+  const currentRoute = router.currentRoute.value;
+  const isAuthPage = currentRoute.name === "login" || currentRoute.name === "register";
+  const redirect = String(currentRoute.fullPath || "/");
+
+  auth.clear();
+
+  if (!isAuthPage) {
+    router.push({
+      name: "login",
+      query: {
+        redirect,
+        reason: "expired",
+      },
+    }).finally(() => {
+      authExpiryRedirecting = false;
+    });
+    return;
+  }
+
+  authExpiryRedirecting = false;
+});
+
 app.mount("#app");
+
+ensureTurkmenObserver();
+window.addEventListener("owazym:route-changed", scheduleTurkmenNormalization);
+window.addEventListener("owazym:locale-changed", scheduleTurkmenNormalization);
 
 window.dispatchEvent(new Event("owazym:route-changed"));

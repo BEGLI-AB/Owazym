@@ -9,10 +9,13 @@ const routes = [
   { path: "/musics", name: "musics", component: () => import("../pages/MusicsManagePage.vue"), meta: { auth: true } },
   { path: "/home-banner/create", name: "home-banner-create", component: () => import("../pages/BannerPage.vue"), meta: { auth: true, admin: true } },
   { path: "/create", name: "create", component: () => import("../pages/CreatePage.vue"), meta: { auth: true, admin: true } },
+  { path: "/admin-sms", name: "admin-sms", component: () => import("../pages/AdminSmsPage.vue"), meta: { auth: true, admin: true } },
   { path: "/search", name: "search", component: () => import("../pages/SearchPage.vue"), meta: { auth: true } },
   { path: "/playlist", name: "playlist", component: () => import("../pages/PlaylistPage.vue"), meta: { auth: true } },
+  { path: "/top10-vote", name: "top10-vote", component: () => import("../pages/Top10VotePage.vue"), meta: { auth: true } },
   { path: "/subscription", name: "subscription", component: () => import("../pages/SubscriptionPage.vue"), meta: { auth: true } },
   { path: "/profile", name: "profile", component: () => import("../pages/ProfilePage.vue"), meta: { auth: true } },
+  { path: "/support", name: "support", component: () => import("../pages/SupportPage.vue"), meta: { auth: true } },
   { path: "/login", name: "login", component: () => import("../pages/LoginPage.vue"), meta: { guest: true, layout: "auth" } },
   { path: "/register", name: "register", component: () => import("../pages/RegisterPage.vue"), meta: { guest: true, layout: "auth" } },
 ];

@@ -32,6 +32,14 @@
             <span class="badge text-bg-secondary">{{ artist.musics_count }}</span>
             <template v-if="isAdmin">
               <button
+                :disabled="busy"
+                type="button"
+                class="btn btn-sm btn-outline-info"
+                @click="publishArtistTrackBanner(artist)"
+              >
+                <i class="bi bi-megaphone me-1"></i>{{ artistAnnouncementCopy.button }}
+              </button>
+              <button
                 v-if="artist.is_popular"
                 :disabled="busy"
                 type="button"
@@ -70,7 +78,7 @@ import { useI18n } from "../composables/useI18n";
 const route = useRoute();
 const router = useRouter();
 const auth = useAuthStore();
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const loading = ref(false);
 const busy = ref(false);
@@ -86,6 +94,30 @@ const isAdmin = computed(() => {
   const role = String(user.role || "").toLowerCase().trim();
   if (role === "admin" || role === "administrator") return true;
   return String(user.name || "").toLowerCase().trim() === "admin";
+});
+
+const artistAnnouncementCopy = computed(() => {
+  if (locale.value === "ru") {
+    return {
+      button: "Анонс наверх",
+      success: "Верхнее уведомление опубликовано.",
+      fallbackError: "Не удалось опубликовать уведомление.",
+    };
+  }
+
+  if (locale.value === "en") {
+    return {
+      button: "Top notice",
+      success: "The top announcement is now live.",
+      fallbackError: "Failed to publish the announcement.",
+    };
+  }
+
+  return {
+    button: "Yokarda bildiris",
+    success: "Yokarky bildiris acyldy.",
+    fallbackError: "Yokarky bildiris acylmady.",
+  };
 });
 
 const load = async () => {
@@ -127,6 +159,26 @@ const setPopular = async (artist, popular) => {
     await load();
   } catch (e) {
     error.value = e.message || t("failed_update_popular");
+  } finally {
+    busy.value = false;
+  }
+};
+
+const publishArtistTrackBanner = async (artist) => {
+  if (!isAdmin.value || !artist?.id) return;
+  status.value = "";
+  error.value = "";
+  busy.value = true;
+  try {
+    const notice = await adminService.publishArtistTrackBanner(artist.id);
+    window.dispatchEvent(
+      new CustomEvent("owazym:site-notice-published", {
+        detail: { notice },
+      }),
+    );
+    status.value = artistAnnouncementCopy.value.success;
+  } catch (e) {
+    error.value = e.message || artistAnnouncementCopy.value.fallbackError;
   } finally {
     busy.value = false;
   }

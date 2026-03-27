@@ -5,6 +5,7 @@ import authRoutes from "./auth.routes.js";
 import libraryRoutes from "./library.routes.js";
 import playlistRoutes from "./playlist.routes.js";
 import adminRoutes from "./admin.routes.js";
+import supportRoutes from "./support.routes.js";
 import { authController } from "../controllers/auth.controller.js";
 import { requireAuth } from "../middlewares/auth.middleware.js";
 import { libraryService } from "../services/library.service.js";
@@ -17,6 +18,7 @@ const router = Router();
 router.get("/health", (_req, res) => ok(res, { ok: true }, "API healthy"));
 router.use("/api", authRoutes);
 router.use("/api", libraryRoutes);
+router.use("/api", supportRoutes);
 router.use("/api/playlists", playlistRoutes);
 router.use("/api/admin", adminRoutes);
 

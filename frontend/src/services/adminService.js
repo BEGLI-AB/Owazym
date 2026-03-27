@@ -1,6 +1,21 @@
 import { api } from "./api";
 
 export const adminService = {
+  async listSms() {
+    const { data } = await api.get("/admin/sms");
+    return data.data;
+  },
+
+  async markSmsRead(id) {
+    const { data } = await api.post(`/admin/sms/${id}/read`);
+    return data.data;
+  },
+
+  async deleteSms(id) {
+    const { data } = await api.delete(`/admin/sms/${id}`);
+    return data.data;
+  },
+
   async getCreateData(params = {}) {
     const { data } = await api.get("/admin/create-data", { params });
     return data.data;
@@ -8,6 +23,11 @@ export const adminService = {
 
   async createArtist(payload) {
     const { data } = await api.post("/admin/artists", payload, { timeout: 120000 });
+    return data.data;
+  },
+
+  async updateArtist(id, payload) {
+    const { data } = await api.put(`/admin/artists/${id}`, payload, { timeout: 120000 });
     return data.data;
   },
 
@@ -36,6 +56,18 @@ export const adminService = {
     return data.data;
   },
 
+  async setArtistDisplayListeners(id, displayListeners) {
+    const { data } = await api.put(`/admin/artists/${id}/display-listeners`, {
+      display_listeners: displayListeners,
+    });
+    return data.data;
+  },
+
+  async publishArtistTrackBanner(id) {
+    const { data } = await api.post(`/admin/artists/${id}/track-banner`);
+    return data.data;
+  },
+
   async createMusic(payload) {
     const { data } = await api.post("/admin/musics", payload, { timeout: 120000 });
     return data.data;
@@ -48,6 +80,23 @@ export const adminService = {
 
   async removeMusicPopular(id) {
     const { data } = await api.delete(`/admin/musics/${id}/popular`);
+    return data.data;
+  },
+
+  async setMusicDisplayPlays(id, displayPlays) {
+    const { data } = await api.put(`/admin/musics/${id}/display-plays`, {
+      display_plays: displayPlays,
+    });
+    return data.data;
+  },
+
+  async setTop10VoteEnabled(enabled) {
+    const { data } = await api.put("/admin/top10-vote/enabled", { enabled });
+    return data.data;
+  },
+
+  async setSeasonEffect(seasonEffect) {
+    const { data } = await api.put("/admin/season-effect", { season_effect: seasonEffect });
     return data.data;
   },
 

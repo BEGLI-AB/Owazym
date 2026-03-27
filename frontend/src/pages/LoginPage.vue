@@ -13,6 +13,7 @@
       <div class="card-body p-4">
         <h3 class="mb-2">{{ t("login") }}</h3>
         <p class="text-white-50 mb-4">{{ t("welcome_login") }}</p>
+        <div v-if="sessionExpiredMessage" class="alert alert-warning py-2">{{ sessionExpiredMessage }}</div>
         <div v-if="error" class="alert alert-danger py-2">{{ error }}</div>
         <form @submit.prevent="submit">
           <div class="mb-3">
@@ -57,6 +58,12 @@ const remember = ref(true);
 const error = ref("");
 const loading = ref(false);
 const themeLabel = ref("");
+const sessionExpiredMessage = computed(() => {
+  if (route.query.reason !== "expired") return "";
+  if (locale.value === "ru") return "\u0412\u0440\u0435\u043C\u044F \u0441\u0435\u0441\u0441\u0438\u0438 \u0437\u0430\u043A\u043E\u043D\u0447\u0438\u043B\u043E\u0441\u044C. \u0412\u043E\u0439\u0434\u0438\u0442\u0435 \u0441\u043D\u043E\u0432\u0430.";
+  if (locale.value === "tm") return "Sessiyanyn wagty gutardy. Yene girin.";
+  return "Your session expired. Please sign in again.";
+});
 let authInputObserver = null;
 
 const updateThemeLabel = (theme) => {

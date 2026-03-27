@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -19,6 +20,7 @@ model User {
   createdAt              DateTime   @default(now()) @map("created_at")
   updatedAt              DateTime   @updatedAt @map("updated_at")
   playlists              Playlist[]
+  topTrackVotes          MonthlyTopTrackVote[]
 
   @@map("users")
 }
@@ -26,7 +28,9 @@ model User {
 model Artist {
   id        BigInt        @id @default(autoincrement())
   name      String        @db.VarChar(255)
+  description String?     @db.Text
   photoPath String?       @map("photo_path") @db.VarChar(255)
+  displayListeners BigInt? @map("display_listeners")
   isPopular Boolean       @default(false) @map("is_popular")
   isVisible Boolean       @default(true) @map("is_visible")
   createdAt DateTime      @default(now()) @map("created_at")
@@ -75,6 +79,9 @@ model Music {
   languageId  BigInt          @map("language_id")
   categoryId  BigInt?         @map("category_id")
   plays       BigInt          @default(0)
+  displayPlays BigInt?        @map("display_plays")
+  monthlyPlays BigInt         @default(0) @map("monthly_plays")
+  monthlyPlaysMonthKey String? @map("monthly_plays_month_key") @db.VarChar(7)
   isPopular   Boolean         @default(false) @map("is_popular")
   isVisible   Boolean         @default(true) @map("is_visible")
   audioPath   String?         @map("audio_path") @db.VarChar(255)
@@ -86,8 +93,23 @@ model Music {
   category    Category?       @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   musicArtist MusicArtist[]
   inPlaylists PlaylistTrack[]
+  topTrackVotes MonthlyTopTrackVote[]
 
   @@map("music")
+}
+
+model MonthlyTopTrackVote {
+  id        BigInt   @id @default(autoincrement())
+  userId    BigInt   @map("user_id")
+  musicId   BigInt   @map("music_id")
+  monthKey  String   @map("month_key") @db.VarChar(7)
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  music     Music    @relation(fields: [musicId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, monthKey], map: "monthly_top_track_votes_user_month_unique")
+  @@index([monthKey, musicId], map: "monthly_top_track_votes_month_music_idx")
+  @@map("monthly_top_track_votes")
 }
 
 model CategoryTranslation {

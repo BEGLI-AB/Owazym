@@ -2,6 +2,8 @@ import { prisma } from "../config/prisma.js";
 import { toNumber } from "../utils/serialize.js";
 import { deleteStorageFile, saveDataUrlFile } from "../utils/upload.js";
 import { resolveStorageUrl } from "../utils/covers.js";
+import { ensureDisplayCounterSchema } from "../utils/displayCounters.js";
+import { getSeasonEffect, getTop10VoteEnabled, setSeasonEffect, setSiteNotice, setTop10VoteEnabled } from "../utils/settings.js";
 
 const ensureName = (value, field = "name") => {
   const name = String(value || "").trim();
@@ -36,10 +38,24 @@ const ensureNullableUrl = (value, field = "url") => {
   }
 };
 
+const parseNullableCounter = (value, field) => {
+  if (value == null || value === "") return null;
+  const raw = String(value).trim();
+  if (!/^\d+$/.test(raw)) {
+    const error = new Error(`${field} must be a non-negative integer`);
+    error.status = 422;
+    error.errors = { [field]: [`${field} must be a non-negative integer`] };
+    throw error;
+  }
+  return BigInt(raw);
+};
+
 const mapMusicListItem = (music) => ({
   id: toNumber(music.id),
   name: music.name,
   artist: (music.musicArtist || []).map((item) => item.artist?.name).filter(Boolean).join(", "),
+  plays: toNumber(music.plays),
+  display_plays: music.displayPlays == null ? null : toNumber(music.displayPlays),
   is_popular: Boolean(music.isPopular),
   is_visible: music.isVisible !== false,
 });
@@ -94,8 +110,9 @@ const normalizeCategoryNames = (payload = {}) => {
 
 export const adminService = {
   async getCreateData({ artistQ = "", musicQ = "", categoryQ = "", locale = "tm" } = {}) {
+    await ensureDisplayCounterSchema();
     const categoryLocale = normalizeCategoryLocale(locale);
-    const [artists, years, languages, categories, existingArtists, existingMusics, existingCategories, homeBanner, homeBanners] =
+    const [artists, years, languages, categories, existingArtists, existingMusics, existingCategories, homeBanner, homeBanners, top10VoteEnabled, seasonEffect] =
       await Promise.all([
       prisma.artist.findMany({
         orderBy: { name: "asc" },
@@ -124,7 +141,29 @@ export const adminService = {
         where: artistQ ? { name: { contains: String(artistQ).trim() } } : {},
         orderBy: { id: "desc" },
         take: 50,
-        select: { id: true, name: true, isPopular: true, isVisible: true },
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          photoPath: true,
+          displayListeners: true,
+          isPopular: true,
+          isVisible: true,
+          music: {
+            where: {
+              music: {
+                isVisible: true,
+              },
+            },
+            select: {
+              music: {
+                select: {
+                  plays: true,
+                },
+              },
+            },
+          },
+        },
       }),
       prisma.music.findMany({
         where: musicQ ? { name: { contains: String(musicQ).trim() } } : {},
@@ -133,6 +172,8 @@ export const adminService = {
         select: {
           id: true,
           name: true,
+          plays: true,
+          displayPlays: true,
           isPopular: true,
           isVisible: true,
           musicArtist: {
@@ -193,9 +234,13 @@ export const adminService = {
           updatedAt: true,
         },
       }),
+      getTop10VoteEnabled(),
+      getSeasonEffect(),
     ]);
 
     return {
+      top10_vote_enabled: top10VoteEnabled,
+      season_effect: seasonEffect,
       artists: artists.map((item) => ({ id: toNumber(item.id), name: item.name })),
       years: years.map((item) => ({ id: toNumber(item.id), date: item.date })),
       languages: languages.map((item) => ({ id: toNumber(item.id), name: item.name })),
@@ -211,6 +256,10 @@ export const adminService = {
       existing_artists: existingArtists.map((item) => ({
         id: toNumber(item.id),
         name: item.name,
+        description: item.description || "",
+        photo_url: item.photoPath ? resolveStorageUrl(item.photoPath) : null,
+        actual_listeners: item.music.reduce((sum, relation) => sum + toNumber(relation.music?.plays), 0),
+        display_listeners: item.displayListeners == null ? null : toNumber(item.displayListeners),
         is_popular: Boolean(item.isPopular),
         is_visible: item.isVisible !== false,
       })),
@@ -242,8 +291,9 @@ export const adminService = {
     };
   },
 
-  async createArtist({ name, photo }) {
+  async createArtist({ name, description, photo }) {
     const artistName = ensureName(name, "name");
+    const artistDescription = ensureName(description, "description");
     const photoPath = await saveDataUrlFile(photo, {
       folder: "artist-photos",
       label: "photo",
@@ -256,18 +306,77 @@ export const adminService = {
       const created = await prisma.artist.create({
         data: {
           name: artistName,
+          description: artistDescription,
           photoPath,
         },
-        select: { id: true, name: true, photoPath: true },
+        select: { id: true, name: true, description: true, photoPath: true },
       });
 
       return {
         id: toNumber(created.id),
         name: created.name,
+        description: created.description || "",
         photo_path: created.photoPath || null,
       };
     } catch (error) {
       if (photoPath) await deleteStorageFile(photoPath);
+      if (error?.code === "P2002") {
+        const e = new Error("Artist name already exists");
+        e.status = 422;
+        e.errors = { name: ["Artist name already exists"] };
+        throw e;
+      }
+      throw error;
+    }
+  },
+
+  async updateArtist(id, { name, description, photo }) {
+    const artistId = BigInt(id);
+    const artistName = ensureName(name, "name");
+    const artistDescription = ensureName(description, "description");
+    const currentArtist = await prisma.artist.findUnique({
+      where: { id: artistId },
+      select: { id: true, photoPath: true },
+    });
+
+    if (!currentArtist) {
+      const error = new Error("Artist not found");
+      error.status = 404;
+      throw error;
+    }
+
+    const nextPhotoPath = await saveDataUrlFile(photo, {
+      folder: "artist-photos",
+      label: "photo",
+      required: false,
+      allowedMimes: ["image/jpeg", "image/jpg", "image/png", "image/webp"],
+      maxBytes: 5 * 1024 * 1024,
+    });
+
+    try {
+      const updated = await prisma.artist.update({
+        where: { id: artistId },
+        data: {
+          name: artistName,
+          description: artistDescription,
+          ...(nextPhotoPath ? { photoPath: nextPhotoPath } : {}),
+        },
+        select: { id: true, name: true, description: true, photoPath: true },
+      });
+
+      if (nextPhotoPath && currentArtist.photoPath && currentArtist.photoPath !== nextPhotoPath) {
+        await deleteStorageFile(currentArtist.photoPath);
+      }
+
+      return {
+        id: toNumber(updated.id),
+        name: updated.name,
+        description: updated.description || "",
+        photo_path: updated.photoPath || null,
+        photo_url: updated.photoPath ? resolveStorageUrl(updated.photoPath) : null,
+      };
+    } catch (error) {
+      if (nextPhotoPath) await deleteStorageFile(nextPhotoPath);
       if (error?.code === "P2002") {
         const e = new Error("Artist name already exists");
         e.status = 422;
@@ -456,6 +565,59 @@ export const adminService = {
     };
   },
 
+  async setArtistDisplayListeners(id, displayListeners) {
+    await ensureDisplayCounterSchema();
+    const artistId = BigInt(id);
+    const artist = await prisma.artist.findUnique({
+      where: { id: artistId },
+      select: { id: true },
+    });
+    if (!artist) {
+      const error = new Error("Artist not found");
+      error.status = 404;
+      throw error;
+    }
+
+    const nextValue = parseNullableCounter(displayListeners, "display_listeners");
+    const updated = await prisma.artist.update({
+      where: { id: artistId },
+      data: { displayListeners: nextValue },
+      select: { id: true, displayListeners: true },
+    });
+
+    return {
+      id: toNumber(updated.id),
+      display_listeners: updated.displayListeners == null ? null : toNumber(updated.displayListeners),
+    };
+  },
+
+  async publishArtistTrackBanner(id) {
+    const artistId = BigInt(id);
+    const artist = await prisma.artist.findUnique({
+      where: { id: artistId },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+
+    if (!artist) {
+      const error = new Error("Artist not found");
+      error.status = 404;
+      throw error;
+    }
+
+    const saved = await setSiteNotice({
+      id: `artist-track-${toNumber(artist.id)}-${Date.now()}`,
+      type: "artist_track",
+      artist_name: artist.name,
+      url: `/artist/${toNumber(artist.id)}`,
+      created_at: new Date().toISOString(),
+    });
+
+    return saved;
+  },
+
   async setMusicPopular(id, isPopular) {
     const musicId = BigInt(id);
     const music = await prisma.music.findUnique({
@@ -478,6 +640,40 @@ export const adminService = {
       id: toNumber(updated.id),
       is_popular: Boolean(updated.isPopular),
     };
+  },
+
+  async setMusicDisplayPlays(id, displayPlays) {
+    await ensureDisplayCounterSchema();
+    const musicId = BigInt(id);
+    const music = await prisma.music.findUnique({
+      where: { id: musicId },
+      select: { id: true },
+    });
+    if (!music) {
+      const error = new Error("Music not found");
+      error.status = 404;
+      throw error;
+    }
+
+    const nextValue = parseNullableCounter(displayPlays, "display_plays");
+    const updated = await prisma.music.update({
+      where: { id: musicId },
+      data: { displayPlays: nextValue },
+      select: { id: true, displayPlays: true },
+    });
+
+    return {
+      id: toNumber(updated.id),
+      display_plays: updated.displayPlays == null ? null : toNumber(updated.displayPlays),
+    };
+  },
+
+  async setTop10VoteEnabled(enabled) {
+    return setTop10VoteEnabled(enabled);
+  },
+
+  async setSeasonEffect(seasonEffect) {
+    return setSeasonEffect(seasonEffect);
   },
 
   async upsertBanner(payload) {
